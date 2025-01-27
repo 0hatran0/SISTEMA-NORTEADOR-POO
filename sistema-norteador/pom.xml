@@ -53,6 +53,14 @@
             <version>5.11.0-M2</version>
             <scope>test</scope>
         </dependency>
+
+    <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version> <!-- Versão estável mais recente disponível -->
+            <scope>provided</scope>
+        </dependency>
     
     </dependencies>
 
