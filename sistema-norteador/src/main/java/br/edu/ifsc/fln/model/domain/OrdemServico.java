@@ -12,7 +12,7 @@ public class OrdemServico {
     private double desconto;
 
     private EStatus status = EStatus.ABERTA;
-    //    private Veiculo veiculo;
+    private Veiculo veiculo;
     private List<ItemOS> itemOS = new ArrayList<>();
 
     // Construtores
@@ -24,14 +24,6 @@ public class OrdemServico {
         this.agenda = agenda;
         this.desconto = desconto;
     }
-//    public OrdemServico(long numero, double total, LocalDate agenda, double desconto, Veiculo veiculo) {
-//        this.numero = numero;
-//        this.total = total;
-//        this.agenda = agenda;
-//        this.desconto = desconto;
-//        this.veiculo = veiculo;
-//    }
-    // Metedos de Acesso
 
     public long getNumero() {
         return numero;
@@ -40,14 +32,6 @@ public class OrdemServico {
     public void setNumero(long numero) {
         this.numero = numero;
     }
-
-//    public double getTotal() {
-//        return total;
-//    }
-//
-//    public void setTotal(double total) {
-//        this.total = total;
-//    }
 
     public LocalDate getAgenda() {
         return agenda;
@@ -73,13 +57,13 @@ public class OrdemServico {
         this.status = status;
     }
 
-//    public Veiculo getVeiculo() {
-//        return veiculo;
-//    }
-//
-//    public void setVeiculo(Veiculo veiculo) {
-//        this.veiculo = veiculo;
-//    }
+    public Veiculo getVeiculo() {
+        return veiculo;
+    }
+
+    public void setVeiculo(Veiculo veiculo) {
+        this.veiculo = veiculo;
+    }
 
     public List<ItemOS> getItemOS() {
         return itemOS;
