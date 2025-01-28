@@ -104,31 +104,7 @@ public class VeiculoDAO {
         return retorno;
     }
 
-    /**
-     * Método para mapear os dados de um modelo (relacional) para objeto, contemplando ou não a marca.
-     * @param rs
-     * @param comMarca
-     * @return
-     * @throws SQLException 
-     */
-//    private Modelo populateVO(ResultSet rs, boolean comMarca) throws SQLException {
-//        Modelo modelo = new Modelo();
-//        //modelo.setMarca(marca);
-//
-//        modelo.setId(rs.getInt("id"));
-//        modelo.setDescricao(rs.getString("descricao"));
-//        if (comMarca) {
-//            Marca marca = new Marca();
-//            marca.setId(rs.getInt("id_marca"));
-//            MarcaDAO marcaDAO = new MarcaDAO();
-//            marcaDAO.setConnection(connection);
-//            marca = marcaDAO.buscar(marca);
-//            veiculo.setMarca(marca);
-//        }
-//        veiculo.setECategoria(Enum.valueOf(ECategoria.class, rs.getString("categoria")));
-//        
-//        return modelo;
-//    }
+//    public Cliente buscar(int id){return retorno;}
 
     private Veiculo populateVO(ResultSet rs) throws SQLException {
         Veiculo veiculo = new Veiculo();

@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS motor(
 CREATE TABLE IF NOT EXISTS veiculo(
     id int NOT NULL auto_increment,
     placa varchar(10) NOT NULL,
-    observacoes varchar(350) NOT NULL,
+    observacoes varchar(350) DEFAULT 'Não informado',
     id_modelo int NOT NULL,
     id_cor int NOT NULL,
     CONSTRAINT pk_veiculo
@@ -64,6 +64,42 @@ CREATE TABLE IF NOT EXISTS veiculo(
     CONSTRAINT fk_veiculo_cor
       FOREIGN KEY(id_cor)
       REFERENCES cor(id)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS cliente(
+    id int NOT NULL auto_increment,
+    nome varchar(150) NOT NULL,
+    celular varchar(20) NOT NULL,
+    email varchar(150) NOT NULL,
+    data_cadastro date NOT NULL,
+    CONSTRAINT pk_cliente
+        PRIMARY KEY(id)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS pessoa_fisica(
+    id_cliente int NOT NULL,
+    cpf varchar(150) NOT NULL,
+    data_nascimento date NOT NULL,
+    CONSTRAINT pk_cliente
+        PRIMARY KEY(id_cliente),
+    CONSTRAINT fk_pf_cliente
+        FOREIGN KEY(id_cliente)
+        REFERENCES cliente(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS pessoa_juridica(
+    id_cliente int NOT NULL,
+    cnpj varchar(150) NOT NULL,
+    inscricao_estadual date NOT NULL,
+    CONSTRAINT pk_cliente
+        PRIMARY KEY(id_cliente),
+    CONSTRAINT fk_pj_cliente
+        FOREIGN KEY(id_cliente)
+        REFERENCES cliente(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) engine=InnoDB;
 
 INSERT INTO marca(nome) VALUES('BMW');
@@ -92,3 +128,10 @@ UPDATE motor SET potencia=300, tipo_combustivel='GASOLINA' WHERE id_modelo = 3;
 INSERT INTO veiculo(placa, observacoes, id_modelo, id_cor) VALUES('AAA-111','Não informado','1','1');
 INSERT INTO veiculo(placa, observacoes, id_modelo, id_cor) VALUES('BBB-222','Não informado','2','2');
 INSERT INTO veiculo(placa, observacoes, id_modelo, id_cor) VALUES('CCC-333','Não informado','3','3');
+
+INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Luiz', '(11) 91111-1111', 'luiz@gmail.com', '2024-11-01');
+INSERT INTO pessoa_fisica(id_cliente, cpf, data_nascimento) VALUES((SELECT max(id) FROM cliente), '111.111.111-11', '1970-01-10');
+INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Bruna', '(22) 92222-2222', 'bruna@gmail.com', '2024-11-02');
+INSERT INTO pessoa_jurica(id_cliente, cnpj, inscricao_estadual) VALUES((SELECT max(id) FROM cliente), '22.222.222/0002-22', '123456789');
+INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Robson', '(33) 93333-3333', 'robson@gmail.com', '2024-11-03');
+INSERT INTO pessoa_fisica(id_cliente, cpf, data_nascimento) VALUES((SELECT max(id) FROM cliente), '333.333.333-33', '1980-03-20');

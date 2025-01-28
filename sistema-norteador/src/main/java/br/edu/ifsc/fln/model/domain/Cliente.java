@@ -9,6 +9,8 @@ public abstract class Cliente {
     protected String email;
     protected String dataCadastro;
 
+//    protected static String dataCadastro;
+
     public Cliente() {
     }
 
@@ -59,6 +61,11 @@ public abstract class Cliente {
 
     public void setDataCadastro(String dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 
     public String getDados() {

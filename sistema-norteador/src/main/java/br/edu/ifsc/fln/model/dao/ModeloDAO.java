@@ -1,9 +1,7 @@
 package br.edu.ifsc.fln.model.dao;
 
-import br.edu.ifsc.fln.model.domain.ECategoria;
-import br.edu.ifsc.fln.model.domain.ETipoCombustivel;
-import br.edu.ifsc.fln.model.domain.Marca;
-import br.edu.ifsc.fln.model.domain.Modelo;
+import br.edu.ifsc.fln.model.domain.*;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -113,31 +111,7 @@ public class ModeloDAO {
         return retorno;
     }
 
-    /**
-     * Método para mapear os dados de um modelo (relacional) para objeto, contemplando ou não a marca.
-     * @param rs
-     * @param comMarca
-     * @return
-     * @throws SQLException 
-     */
-//    private Modelo populateVO(ResultSet rs, boolean comMarca) throws SQLException {
-//        Modelo modelo = new Modelo();
-//        //modelo.setMarca(marca);
-//
-//        modelo.setId(rs.getInt("id"));
-//        modelo.setDescricao(rs.getString("descricao"));
-//        if (comMarca) {
-//            Marca marca = new Marca();
-//            marca.setId(rs.getInt("id_marca"));
-//            MarcaDAO marcaDAO = new MarcaDAO();
-//            marcaDAO.setConnection(connection);
-//            marca = marcaDAO.buscar(marca);
-//            modelo.setMarca(marca);
-//        }
-//        modelo.setECategoria(Enum.valueOf(ECategoria.class, rs.getString("categoria")));
-//        
-//        return modelo;
-//    }
+//    public Cliente buscar(int id){return retorno;}
 
     private Modelo populateVO(ResultSet rs) throws SQLException {
         Modelo modelo = new Modelo();

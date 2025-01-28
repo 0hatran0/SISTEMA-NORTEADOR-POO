@@ -85,6 +85,8 @@ CREATE TABLE IF NOT EXISTS pessoa_fisica(
     CONSTRAINT fk_pf_cliente
         FOREIGN KEY(id_cliente)
         REFERENCES cliente(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS pessoa_juridica(
@@ -96,6 +98,8 @@ CREATE TABLE IF NOT EXISTS pessoa_juridica(
     CONSTRAINT fk_pj_cliente
         FOREIGN KEY(id_cliente)
         REFERENCES cliente(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) engine=InnoDB;
 
 INSERT INTO marca(nome) VALUES('BMW');
