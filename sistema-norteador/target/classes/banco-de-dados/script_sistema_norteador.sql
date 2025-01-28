@@ -102,6 +102,39 @@ CREATE TABLE IF NOT EXISTS pessoa_juridica(
         ON UPDATE CASCADE
 ) engine=InnoDB;
 
+CREATE TABLE ordem_de_servico(
+    id int NOT NULL auto_increment,
+    numero int NOT NULL,
+    total decimal(10,2) NOT NULL,
+    agenda date NOT NULL,
+    desconto double NOT NULL,
+    status ENUM('ABERTA', 'FECHADA', 'CANCELADA')
+    NOT NULL DEFAULT 'ABERTA',
+    id_veiculo int NOT NULL,
+    CONSTRAINT pk_os
+        PRIMARY KEY(id),
+    CONSTRAINT fk_os_veiculo
+        FOREIGN KEY(id_veiculo)
+        REFERENCES veiculo(id)
+) engine=InnoDB;
+
+CREATE TABLE item_da_ordem(
+    id int NOT NULL auto_increment,
+    valorServico decimal(10,2) NOT NULL,
+    observacao VARCHAR(300) NOT NULL,
+    id_servico int NOT NULL,
+    id_os int NOT NULL,
+    CONSTRAINT pk_item_da_ordem
+        PRIMARY KEY(id),
+    CONSTRAINT fk_item_servico
+        FOREIGN KEY(id_servico)
+        REFERENCES servico(id),
+    CONSTRAINT fk_item_os
+        FOREIGN KEY(id_os)
+        REFERENCES ordem_de_servico(id)
+        ON DELETE CASCADE
+) engine=InnoDB;
+
 INSERT INTO marca(nome) VALUES('BMW');
 INSERT INTO marca(nome) VALUES('Mercedes-Benz');
 INSERT INTO marca(nome) VALUES('Porsche');
@@ -135,3 +168,4 @@ INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Bruna', '(22) 
 INSERT INTO pessoa_jurica(id_cliente, cnpj, inscricao_estadual) VALUES((SELECT max(id) FROM cliente), '22.222.222/0002-22', '123456789');
 INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Robson', '(33) 93333-3333', 'robson@gmail.com', '2024-11-03');
 INSERT INTO pessoa_fisica(id_cliente, cpf, data_nascimento) VALUES((SELECT max(id) FROM cliente), '333.333.333-33', '1980-03-20');
+
