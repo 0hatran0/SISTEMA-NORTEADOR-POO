@@ -68,50 +68,36 @@ public class OrdemServicoDAO {
     }
 
     public boolean alterar(OrdemServico ordemServico) {
-        String sql = "UPDATE ordemServico SET numero=?, total=?, agenda=?, desconto=?, status=?, id_veiculo=? WHERE id=?";
+        String sql = "UPDATE ordem_de_servico SET total=?, agenda=?, desconto=?, status=?, id_veiculo=? WHERE numero=?";
         try {
             //antes de atualizar a nova ordemServico, a anterior terá seus itens de ordemServico removidos
             // e o estoque dos produtos da ordemServico sofrerão um estorno
             connection.setAutoCommit(false);
-            ItemDaOrdemServicoDAO itemDaOrdemServicoDAO = new ItemDaOrdemServicoDAO();
-            itemDaOrdemServicoDAO.setConnection(connection);
-            ProdutoDAO produtoDAO = new ProdutoDAO();
-            produtoDAO.setConnection(connection);
-            EstoqueDAO estoqueDAO = new EstoqueDAO();
-            estoqueDAO.setConnection(connection);
+            ItemOSDAO itemOSDAO = new ItemOSDAO();
+            itemOSDAO.setConnection(connection);
+            ServicoDAO servicoDAO = new ServicoDAO();
+            servicoDAO.setConnection(connection);
 
             //OrdemServico ordemServicoAnterior = buscar(ordemServico.getCdOrdemServico());
             OrdemServico ordemServicoAnterior = buscar(ordemServico);
-            List<ItemDeOrdemServico> itensDeOrdemServico = itemDaOrdemServicoDAO.listarPorOrdemServico(ordemServicoAnterior);
-            for (ItemDeOrdemServico iv : itensDeOrdemServico) {
-                //Produto p = iv.getProduto(); //isto não da certo ...
-                Produto p = estoqueDAO.getEstoque(iv.getProduto());
-                p.getEstoque().repor(iv.getQuantidade());
-                estoqueDAO.atualizar(p.getEstoque());
-                itemDaOrdemServicoDAO.remover(iv);
-            }
+            List<ItemOS> itensDaOrdemServico = itemOSDAO.listarPorOrdem(ordemServicoAnterior);
+
             //atualiza os dados da ordemServico
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setDate(1, Date.valueOf(ordemServico.getData()));
-            stmt.setBigDecimal(2, ordemServico.getTotal());
-            stmt.setBoolean(3, ordemServico.isPago());
-            stmt.setDouble(4, ordemServico.getTaxaDesconto());
-            stmt.setString(5, OrdemServico.getEmpresa());
-            if  (ordemServico.getStatusOrdemServico() != null) {
-                stmt.setString(6, ordemServico.getStatusOrdemServico().name());
+            stmt.setDouble(1, ordemServico.calcularServico());
+            stmt.setDate(2, Date.valueOf(ordemServico.getAgenda()));
+            stmt.setDouble(3, ordemServico.getDesconto());
+            if  (ordemServico.getStatus().name() != null) {
+                stmt.setString(4, ordemServico.getStatus().name());
             } else {
-                stmt.setString(6, EStatusOrdemServico.ABERTA.name());
+                //TODO apresentar situação clara de inconsistência de dados
+                //tratamento de exceções e a necessidade de uso de commit e rollback
+                //stmt.setString(6, "teste");
+                stmt.setString(4, EStatus.ABERTA.name());
             }
-            stmt.setInt(7, ordemServico.getCliente().getId());
-            stmt.setInt(8, ordemServico.getId());
+            stmt.setInt(5, ordemServico.getVeiculo().getId());
+            stmt.setLong(6,ordemServico.getNumero());
             stmt.execute();
-            for (ItemDeOrdemServico iv: ordemServico.getItensDeOrdemServico()) {
-                //Produto p = iv.getProduto(); //isto não da certo ...
-                Produto p = estoqueDAO.getEstoque(iv.getProduto());
-                p.getEstoque().retirar(iv.getQuantidade());
-                estoqueDAO.atualizar(p.getEstoque());
-                itemDaOrdemServicoDAO.inserir(iv);
-            }
             connection.commit();
             return true;
         } catch (SQLException ex) {
@@ -128,25 +114,17 @@ public class OrdemServicoDAO {
         }
     }
 
-    public boolean remover(Cliente cliente) {
-        String sql = "DELETE FROM ordemServico WHERE id=?";
+    public boolean remover(OrdemServico ordemServico) {
+        String sql = "DELETE FROM ordem_de_servico WHERE numero=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             try {
                 connection.setAutoCommit(false);
-                ItemDaOrdemServicoDAO itemDaOrdemServicoDAO = new ItemDaOrdemServicoDAO();
-                itemDaOrdemServicoDAO.setConnection(connection);
-                ProdutoDAO produtoDAO = new ProdutoDAO();
-                produtoDAO.setConnection(connection);
-                EstoqueDAO estoqueDAO = new EstoqueDAO();
-                estoqueDAO.setConnection(connection);
-                for (ItemDeOrdemServico itemDeOrdemServico : ordemServico.getItensDeOrdemServico()) {
-                    Produto produto = itemDeOrdemServico.getProduto();
-                    produto.getEstoque().repor(itemDeOrdemServico.getQuantidade());
-                    estoqueDAO.atualizar(produto.getEstoque());
-                    itemDaOrdemServicoDAO.remover(itemDeOrdemServico);
-                }
-                stmt.setInt(1, ordemServico.getId());
+                ItemOSDAO itemOSDAO = new ItemOSDAO();
+                itemOSDAO.setConnection(connection);
+                ServicoDAO servicoDAO = new ServicoDAO();
+                servicoDAO.setConnection(connection);
+                stmt.setLong(1, ordemServico.getNumero());
                 stmt.execute();
                 connection.commit();
             } catch (SQLException exc) {
@@ -167,38 +145,36 @@ public class OrdemServicoDAO {
         }
     }
 
-    public List<Cliente> listar() {
-        String sql = "SELECT * FROM ordemServico";
+    public List<OrdemServico> listar() {
+        String sql = "SELECT * FROM ordem_de_servico";
         List<OrdemServico> retorno = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet resultado = stmt.executeQuery();
             while (resultado.next()) {
                 OrdemServico ordemServico = new OrdemServico();
-                Cliente cliente = new Cliente();
-                List<ItemDeOrdemServico> itensDeOrdemServico = new ArrayList();
+                Veiculo veiculo = new Veiculo();
+                List<ItemOS> itensOS = new ArrayList();
 
-                ordemServico.setId(resultado.getInt("id"));
-                ordemServico.setData(resultado.getDate("data").toLocalDate());
-                //ordemServico.setTotal(resultado.getBigDecimal("total"));
-                ordemServico.setPago(resultado.getBoolean("pago"));
-                ordemServico.setTaxaDesconto(resultado.getDouble("taxa_desconto"));
-                ordemServico.setStatusOrdemServico(Enum.valueOf(EStatusOrdemServico.class, resultado.getString("situacao")));
-                OrdemServico.setEmpresa(resultado.getString("empresa"));
-                cliente.setId(resultado.getInt("id_cliente"));
+                ordemServico.setNumero(resultado.getInt("numero"));
+//                ordemServico.calcularServico();
+                ordemServico.setAgenda(resultado.getDate("agenda").toLocalDate());
+                ordemServico.setDesconto(resultado.getDouble("desconto"));
+                ordemServico.setStatus(Enum.valueOf(EStatus.class, resultado.getString("status")));
+                veiculo.setId(resultado.getInt("id_veiculo"));
 
                 //Obtendo os dados completos do Cliente associado à OrdemServico
-                ClienteDAO clienteDAO = new ClienteDAO();
-                clienteDAO.setConnection(connection);
-                cliente = clienteDAO.buscar(cliente);
+                VeiculoDAO veiculoDAO = new VeiculoDAO();
+                veiculoDAO.setConnection(connection);
+                veiculo = veiculoDAO.buscar(veiculo);
 
                 //Obtendo os dados completos dos Itens de OrdemServico associados à OrdemServico
-                ItemDaOrdemServicoDAO itemDaOrdemServicoDAO = new ItemDaOrdemServicoDAO();
-                itemDaOrdemServicoDAO.setConnection(connection);
-                itensDeOrdemServico = itemDaOrdemServicoDAO.listarPorOrdemServico(ordemServico);
+                ItemOSDAO itemOSDAO = new ItemOSDAO();
+                itemOSDAO.setConnection(connection);
+                itensOS = itemOSDAO.listarPorOrdem(ordemServico);
 
-                ordemServico.setCliente(cliente);
-                ordemServico.setItensDeOrdemServico(itensDeOrdemServico);
+                ordemServico.setVeiculo(veiculo);
+                ordemServico.add(itensOS);
                 retorno.add(ordemServico);
             }
         } catch (SQLException ex) {
@@ -208,23 +184,21 @@ public class OrdemServicoDAO {
     }
 
     public OrdemServico buscar(OrdemServico ordemServico) {
-        String sql = "SELECT * FROM ordemServico WHERE id=?";
+        String sql = "SELECT * FROM ordem_de_servico WHERE id=?";
         OrdemServico ordemServicoRetorno = new OrdemServico();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, ordemServico.getId());
+            stmt.setLong(1, ordemServico.getNumero());
             ResultSet resultado = stmt.executeQuery();
             if (resultado.next()) {
-                Cliente cliente = new Cliente();
-                ordemServicoRetorno.setId(resultado.getInt("id"));
-                ordemServicoRetorno.setData(resultado.getDate("data").toLocalDate());
-//                ordemServicoRetorno.setTotal(resultado.getBigDecimal("total"));
-                ordemServicoRetorno.setStatusOrdemServico(Enum.valueOf(EStatusOrdemServico.class, resultado.getString("situacao")));
-                ordemServicoRetorno.setPago(resultado.getBoolean("pago"));
-                ordemServicoRetorno.setTaxaDesconto(resultado.getDouble("taxa_desconto"));
-                //ordemServicoRetorno.setEmpresa(resultado.getString("empresa"));
-                cliente.setId(resultado.getInt("id_cliente"));
-                ordemServicoRetorno.setCliente(cliente);
+                Veiculo veiculo = new Veiculo();
+                ordemServicoRetorno.setNumero(resultado.getLong("numero"));
+//                ordemServicoRetorno.calcularServico();
+                ordemServicoRetorno.setAgenda(resultado.getDate("agenda").toLocalDate());
+                ordemServicoRetorno.setDesconto(resultado.getDouble("desconto"));
+                ordemServicoRetorno.setStatus(Enum.valueOf(EStatus.class, resultado.getString("status")));
+                veiculo.setId(resultado.getInt("id_veiculo"));
+                ordemServicoRetorno.setVeiculo(veiculo);
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -232,7 +206,7 @@ public class OrdemServicoDAO {
         return ordemServicoRetorno;
     }
 
-    public Cliente buscar(int id) {
+    public OrdemServico buscar(int id) {
         String sql = "SELECT * FROM ordemServico WHERE id=?";
         OrdemServico ordemServicoRetorno = new OrdemServico();
         try {
@@ -240,16 +214,14 @@ public class OrdemServicoDAO {
             stmt.setInt(1, id);
             ResultSet resultado = stmt.executeQuery();
             if (resultado.next()) {
-                Cliente cliente = new Cliente();
-                ordemServicoRetorno.setId(resultado.getInt("id"));
-                ordemServicoRetorno.setData(resultado.getDate("data").toLocalDate());
-//                ordemServicoRetorno.setTotal(resultado.getBigDecimal("total"));
-                ordemServicoRetorno.setStatusOrdemServico(Enum.valueOf(EStatusOrdemServico.class, resultado.getString("situacao")));
-                ordemServicoRetorno.setPago(resultado.getBoolean("pago"));
-                ordemServicoRetorno.setTaxaDesconto(resultado.getDouble("taxa_desconto"));
-                //ordemServicoRetorno.setEmpresa(resultado.getString("empresa"));
-                cliente.setId(resultado.getInt("id_cliente"));
-                ordemServicoRetorno.setCliente(cliente);
+                Veiculo veiculo = new Veiculo();
+                ordemServicoRetorno.setNumero(resultado.getLong("numero"));
+//                ordemServicoRetorno.calcularServico();
+                ordemServicoRetorno.setAgenda(resultado.getDate("agenda").toLocalDate());
+                ordemServicoRetorno.setDesconto(resultado.getDouble("desconto"));
+                ordemServicoRetorno.setStatus(Enum.valueOf(EStatus.class, resultado.getString("status")));
+                veiculo.setId(resultado.getInt("id_veiculo"));
+                ordemServicoRetorno.setVeiculo(veiculo);
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -266,7 +238,7 @@ public class OrdemServicoDAO {
             ResultSet resultado = stmt.executeQuery();
 
             if (resultado.next()) {
-                retorno.setId(resultado.getInt("max"));
+                retorno.setNumero(resultado.getInt("max"));
                 return retorno;
             }
         } catch (SQLException ex) {
@@ -275,25 +247,25 @@ public class OrdemServicoDAO {
         return retorno;
     }
 
-    private Cliente populateVO(ResultSet rs) throws SQLException {
-        Cliente cliente;
-        if (rs.getString("cnpj") == null || rs.getString("cnpj").length() <= 0) {
-            //é um fornecedor nacional
-            cliente = new PessoaFisica();
-            ((PessoaFisica)cliente).setCpf(rs.getString("cpf"));
-            ((PessoaFisica)cliente).setDataNascimento(rs.getString("data_nascimento"));
-        } else {
-            //é um fornecedor internacional
-            cliente = new PessoaJuridica();
-            ((PessoaJuridica)cliente).setCnpj(rs.getString("cnpj"));
-            ((PessoaJuridica)cliente).setInscricaoEstadual(rs.getString("inscricao_estadual"));
-        }
-        cliente.setId(rs.getInt("id"));
-        cliente.setNome(rs.getString("nome"));
-        cliente.setCelular(rs.getString("celular"));
-        cliente.setEmail(rs.getString("email"));
-        cliente.setDataCadastro(rs.getString("data_cadastro"));
-        return cliente;
-    }
+//    private Cliente populateVO(ResultSet rs) throws SQLException {
+//        Cliente cliente;
+//        if (rs.getString("cnpj") == null || rs.getString("cnpj").length() <= 0) {
+//            //é um fornecedor nacional
+//            cliente = new PessoaFisica();
+//            ((PessoaFisica)cliente).setCpf(rs.getString("cpf"));
+//            ((PessoaFisica)cliente).setDataNascimento(rs.getString("data_nascimento"));
+//        } else {
+//            //é um fornecedor internacional
+//            cliente = new PessoaJuridica();
+//            ((PessoaJuridica)cliente).setCnpj(rs.getString("cnpj"));
+//            ((PessoaJuridica)cliente).setInscricaoEstadual(rs.getString("inscricao_estadual"));
+//        }
+//        cliente.setId(rs.getInt("id"));
+//        cliente.setNome(rs.getString("nome"));
+//        cliente.setCelular(rs.getString("celular"));
+//        cliente.setEmail(rs.getString("email"));
+//        cliente.setDataCadastro(rs.getString("data_cadastro"));
+//        return cliente;
+//    }
 
 }

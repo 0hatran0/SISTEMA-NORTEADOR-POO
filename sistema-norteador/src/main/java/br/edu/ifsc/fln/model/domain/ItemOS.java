@@ -1,15 +1,24 @@
 package br.edu.ifsc.fln.model.domain;
 
 public class ItemOS {
+    private  int id;
     private double valorServico;
     private String observacoes;
 
     private Servico servico;
     private OrdemServico ordemServico;
 
+    public ItemOS(){}
+
     public ItemOS(String observacoes, Servico servico) {
         this.observacoes = observacoes;
         this.servico = servico;
+    }
+
+    public int getId() { return id; }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public double getValorServico() {

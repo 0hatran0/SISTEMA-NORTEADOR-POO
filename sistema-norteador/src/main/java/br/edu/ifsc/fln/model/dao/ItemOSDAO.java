@@ -1,8 +1,6 @@
 package br.edu.ifsc.fln.model.dao;
 
-import br.edu.ifsc.fln.model.domain.Cliente;
-import br.edu.ifsc.fln.model.domain.PessoaFisica;
-import br.edu.ifsc.fln.model.domain.PessoaJuridica;
+import br.edu.ifsc.fln.model.domain.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,144 +23,143 @@ public class ItemOSDAO {
         this.connection = connection;
     }
 
-    public boolean inserir(Cliente cliente) {
+    public boolean inserir(ItemOS itemOS) {
         String sql = "INSERT INTO item_da_ordem(valorServico, observacao, id_servico, id_os) VALUES(?,?,?,?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, itemDeVenda.getQuantidade());
-            stmt.setBigDecimal(2, itemDeVenda.getValor());
-            stmt.setInt(3, itemDeVenda.getProduto().getId());
-            stmt.setInt(4, itemDeVenda.getVenda().getId());
-
+            stmt.setDouble(1, itemOS.getValorServico());
+            stmt.setString(2, itemOS.getObservacoes());
+            stmt.setInt(3, itemOS.getServico().getId());
+            stmt.setLong(4, itemOS.getOrdemServico().getNumero());
             stmt.execute();
             return true;
         } catch (SQLException ex) {
-            Logger.getLogger(ItemDeVendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
 
-    public boolean alterar(ItemDeVenda itemDeVenda) {
+    public boolean alterar(ItemOS itemOS) {
         return true;
     }
 
-    public boolean remover(Cliente cliente) {
+    public boolean remover(ItemOS itemOS) {
         String sql = "DELETE FROM item_da_ordem WHERE id=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, itemDeVenda.getId());
+            stmt.setInt(1, itemOS.getId());
             stmt.execute();
             return true;
         } catch (SQLException ex) {
-            Logger.getLogger(ItemDeVendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
 
-    public List<Cliente> listar() {
-        String sql = "SELECT * FROM item_de_venda";
-        List<ItemDeVenda> retorno = new ArrayList<>();
+    public List<ItemOS> listar() {
+        String sql = "SELECT * FROM item_da_ordem";
+        List<ItemOS> retorno = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet resultado = stmt.executeQuery();
             while (resultado.next()) {
-                ItemDeVenda itemDeVenda = new ItemDeVenda();
-                Produto produto = new Produto();
-                Venda venda = new Venda();
-                itemDeVenda.setId(resultado.getInt("id"));
-                itemDeVenda.setQuantidade(resultado.getInt("quantidade"));
-                itemDeVenda.setValor(resultado.getBigDecimal("valor"));
+                ItemOS itemOS = new ItemOS();
+                Servico servico = new Servico();
+                OrdemServico ordemServico = new OrdemServico();
+                itemOS.setId(resultado.getInt("id"));
+                itemOS.setValorServico(resultado.getDouble("valor_do_servico"));
+                itemOS.setObservacoes(resultado.getString("observacao"));
 
-                produto.setId(resultado.getInt("id_produto"));
-                venda.setId(resultado.getInt("id_venda"));
+                servico.setId(resultado.getInt("id_servico"));
+                ordemServico.setNumero(resultado.getInt("id_os"));
 
                 //Obtendo os dados completos do Produto associado ao Item de Venda
-                ProdutoDAO produtoDAO = new ProdutoDAO();
-                produtoDAO.setConnection(connection);
-                produto = produtoDAO.buscar(produto);
+                ServicoDAO servicoDAO = new ServicoDAO();
+                servicoDAO.setConnection(connection);
+                servico = servicoDAO.buscar(servico);
 
-                VendaDAO vendaDAO = new VendaDAO();
-                vendaDAO.setConnection(connection);
-                venda = vendaDAO.buscar(venda);
+                OrdemServicoDAO ordemServicoDAO = new OrdemServicoDAO();
+                ordemServicoDAO.setConnection(connection);
+                ordemServico = ordemServicoDAO.buscar(ordemServico);
 
-                itemDeVenda.setProduto(produto);
-                itemDeVenda.setVenda(venda);
+                itemOS.setServico(servico);
+                itemOS.setOrdemServico(ordemServico);
 
-                retorno.add(itemDeVenda);
+                retorno.add(itemOS);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItemDeVendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retorno;
     }
 
-    public List<ItemDeVenda> listarPorVenda(Venda venda) {
+    public List<ItemOS> listarPorOrdem(OrdemServico ordemServico) {
         String sql = "SELECT * FROM item_de_venda WHERE id_venda=?";
-        List<ItemDeVenda> retorno = new ArrayList<>();
+        List<ItemOS> retorno = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, venda.getId());
+            stmt.setLong(1, ordemServico.getNumero());
             ResultSet resultado = stmt.executeQuery();
             while (resultado.next()) {
-                ItemDeVenda itemDeVenda = new ItemDeVenda();
-                Produto produto = new Produto();
-                Venda v = new Venda();
-                itemDeVenda.setId(resultado.getInt("id"));
-                itemDeVenda.setQuantidade(resultado.getInt("quantidade"));
-                itemDeVenda.setValor(resultado.getBigDecimal("valor"));
+                ItemOS itemOS = new ItemOS();
+                Servico servico = new Servico();
+                OrdemServico os = new OrdemServico();
+                itemOS.setId(resultado.getInt("id"));
+                itemOS.setValorServico(resultado.getDouble("valor_do_servico"));
+                itemOS.setObservacoes(resultado.getString("observacao"));
 
-                produto.setId(resultado.getInt("id_produto"));
-                v.setId(resultado.getInt("id_venda"));
+                servico.setId(resultado.getInt("id_servico"));
+                os.setNumero(resultado.getInt("id_os"));
 
                 //Obtendo os dados completos do Produto associado ao Item de Venda
-                ProdutoDAO produtoDAO = new ProdutoDAO();
-                produtoDAO.setConnection(connection);
-                produto = produtoDAO.buscar(produto);
+                ServicoDAO servicoDAO = new ServicoDAO();
+                servicoDAO.setConnection(connection);
+                servico = servicoDAO.buscar(servico);
 
-                itemDeVenda.setProduto(produto);
-                itemDeVenda.setVenda(v);
+                itemOS.setServico(servico);
+                itemOS.setOrdemServico(os);
 
-                retorno.add(itemDeVenda);
+                retorno.add(itemOS);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItemDeVendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retorno;
     }
 
-    public ItemDeVenda buscar(ItemDeVenda itemDeVenda) {
+    public ItemOS buscar(ItemOS itemOS) {
         String sql = "SELECT * FROM item_de_venda WHERE id=?";
-        ItemDeVenda retorno = new ItemDeVenda();
+        ItemOS retorno = new ItemOS();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, itemDeVenda.getId());
+            stmt.setInt(1, itemOS.getId());
             ResultSet resultado = stmt.executeQuery();
             if (resultado.next()) {
-                Produto produto = new Produto();
-                Venda venda = new Venda();
-                itemDeVenda.setId(resultado.getInt("id"));
-                itemDeVenda.setQuantidade(resultado.getInt("quantidade"));
-                itemDeVenda.setValor(resultado.getBigDecimal("valor"));
+                Servico servico = new Servico();
+                OrdemServico ordemServico = new OrdemServico();
+                itemOS.setId(resultado.getInt("id"));
+                itemOS.setValorServico(resultado.getDouble("valor_do_servico"));
+                itemOS.setObservacoes(resultado.getString("observacao"));
 
-                produto.setId(resultado.getInt("id_produto"));
-                venda.setId(resultado.getInt("id_venda"));
+                servico.setId(resultado.getInt("id_servico"));
+                ordemServico.setNumero(resultado.getInt("id_os"));
 
-                //Obtendo os dados completos do Cliente associado à Venda
-                ProdutoDAO produtoDAO = new ProdutoDAO();
-                produtoDAO.setConnection(connection);
-                produto = produtoDAO.buscar(produto);
+                //Obtendo os dados completos do Produto associado ao Item de Venda
+                ServicoDAO servicoDAO = new ServicoDAO();
+                servicoDAO.setConnection(connection);
+                servico = servicoDAO.buscar(servico);
 
-                VendaDAO vendaDAO = new VendaDAO();
-                vendaDAO.setConnection(connection);
-                venda = vendaDAO.buscar(venda);
+                OrdemServicoDAO ordemServicoDAO = new OrdemServicoDAO();
+                ordemServicoDAO.setConnection(connection);
+                ordemServico = ordemServicoDAO.buscar(ordemServico);
 
-                itemDeVenda.setProduto(produto);
-                itemDeVenda.setVenda(venda);
+                itemOS.setServico(servico);
+                itemOS.setOrdemServico(ordemServico);
 
-                retorno = itemDeVenda;
+                retorno = itemOS;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(VendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retorno;
     }
