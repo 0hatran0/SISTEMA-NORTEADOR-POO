@@ -21,7 +21,7 @@ public class OrdemServicoDAO {
     }
 
     public boolean inserir(OrdemServico ordemServico) {
-        String sql = "INSERT INTO ordem_de_servico(numero, total, agenda, desconto, status, id_veiculo) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO ordem_de_servico(numero, total, agenda, desconto, situacao, id_veiculo) VALUES(?,?,?,?,?,?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             connection.setAutoCommit(false);
@@ -43,11 +43,11 @@ public class OrdemServicoDAO {
             itemDaOrdemServicoDAO.setConnection(connection);
             ServicoDAO servicoDAO = new ServicoDAO();
             servicoDAO.setConnection(connection);
-            for (ItemOS itemDaOrdemServico: ordemServico.getItemOS()) {
-                Servico servico = itemDaOrdemServico.getServico();
-                itemDaOrdemServico.setOrdemServico(this.buscarUltimaOrdemServico());
-                itemDaOrdemServicoDAO.inserir(itemDaOrdemServico);
-            }
+//            for (ItemOS itemDaOrdemServico: ordemServico.getItemOS()) {
+//                Servico servico = itemDaOrdemServico.getServico();
+//                itemDaOrdemServico.setOrdemServico(this.buscarUltimaOrdemServico());
+//                itemDaOrdemServicoDAO.inserir(itemDaOrdemServico);
+//            }
             connection.commit();
             connection.setAutoCommit(true);
             return true;
@@ -68,17 +68,14 @@ public class OrdemServicoDAO {
     }
 
     public boolean alterar(OrdemServico ordemServico) {
-        String sql = "UPDATE ordem_de_servico SET total=?, agenda=?, desconto=?, status=?, id_veiculo=? WHERE numero=?";
+        String sql = "UPDATE ordem_de_servico SET total=?, agenda=?, desconto=?, situacao=?, id_veiculo=? WHERE numero=?";
         try {
-            //antes de atualizar a nova ordemServico, a anterior terá seus itens de ordemServico removidos
-            // e o estoque dos produtos da ordemServico sofrerão um estorno
             connection.setAutoCommit(false);
             ItemOSDAO itemOSDAO = new ItemOSDAO();
             itemOSDAO.setConnection(connection);
             ServicoDAO servicoDAO = new ServicoDAO();
             servicoDAO.setConnection(connection);
 
-            //OrdemServico ordemServicoAnterior = buscar(ordemServico.getCdOrdemServico());
             OrdemServico ordemServicoAnterior = buscar(ordemServico);
             List<ItemOS> itensDaOrdemServico = itemOSDAO.listarPorOrdem(ordemServicoAnterior);
 
