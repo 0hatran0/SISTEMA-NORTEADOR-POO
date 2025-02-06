@@ -103,15 +103,12 @@ CREATE TABLE IF NOT EXISTS pessoa_juridica(
 ) engine=InnoDB;
 
 CREATE TABLE ordem_de_servico(
---    id int NOT NULL auto_increment,
-    numero int NOT NULL,
+    numero int NOT NULL auto_increment,
     total decimal(10,2) NOT NULL,
     agenda date NOT NULL,
     desconto double NOT NULL,
     situacao ENUM('ABERTA', 'FECHADA', 'CANCELADA') NOT NULL DEFAULT 'ABERTA',
     id_veiculo int NOT NULL,
---    CONSTRAINT pk_os
---        PRIMARY KEY(id),
     CONSTRAINT pk_os
         PRIMARY KEY (numero),
     CONSTRAINT fk_os_veiculo
@@ -130,9 +127,6 @@ CREATE TABLE item_da_ordem(
     CONSTRAINT fk_item_servico
         FOREIGN KEY(id_servico)
         REFERENCES servico(id),
---    CONSTRAINT fk_item_os
---        FOREIGN KEY(id_os)
---        REFERENCES ordem_de_servico(id)
     CONSTRAINT fk_item_os
         FOREIGN KEY(id_os)
         REFERENCES ordem_de_servico(numero)

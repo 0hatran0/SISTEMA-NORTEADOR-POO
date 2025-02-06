@@ -71,9 +71,9 @@ public class OrdemServico {
         return itemOS;
     }
 
-//    public void setItemOS(List<ItemOS> itemOS) {
-//        this.itemOS = itemOS;
-//    }
+    public void setItemOS(List<ItemOS> itemOS) {
+        this.itemOS = itemOS;
+    }
 
     // Metodos
     public double calcularServico(){
@@ -88,7 +88,6 @@ public class OrdemServico {
     public void add(ItemOS itemOS){
         this.itemOS.add(itemOS);
         itemOS.setOrdemServico(this);
-
     }
 
     public void remove(ItemOS itemOS){

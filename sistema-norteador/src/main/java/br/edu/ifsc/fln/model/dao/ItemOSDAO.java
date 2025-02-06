@@ -43,6 +43,7 @@ public class ItemOSDAO {
         return true;
     }
 
+    //Precisa desse remove? Ja possui o delete on cascade
     public boolean remover(ItemOS itemOS) {
         String sql = "DELETE FROM item_da_ordem WHERE id=?";
         try {
@@ -94,7 +95,7 @@ public class ItemOSDAO {
     }
 
     public List<ItemOS> listarPorOrdem(OrdemServico ordemServico) {
-        String sql = "SELECT * FROM item_de_venda WHERE id_venda=?";
+        String sql = "SELECT * FROM item_de_venda WHERE id_os=?";
         List<ItemOS> retorno = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -103,7 +104,9 @@ public class ItemOSDAO {
             while (resultado.next()) {
                 ItemOS itemOS = new ItemOS();
                 Servico servico = new Servico();
+                // Entender o que acontece com essa OS
                 OrdemServico os = new OrdemServico();
+                //
                 itemOS.setId(resultado.getInt("id"));
                 itemOS.setValorServico(resultado.getDouble("valor_do_servico"));
                 itemOS.setObservacoes(resultado.getString("observacao"));
@@ -111,7 +114,6 @@ public class ItemOSDAO {
                 servico.setId(resultado.getInt("id_servico"));
                 os.setNumero(resultado.getInt("id_os"));
 
-                //Obtendo os dados completos do Produto associado ao Item de Venda
                 ServicoDAO servicoDAO = new ServicoDAO();
                 servicoDAO.setConnection(connection);
                 servico = servicoDAO.buscar(servico);
