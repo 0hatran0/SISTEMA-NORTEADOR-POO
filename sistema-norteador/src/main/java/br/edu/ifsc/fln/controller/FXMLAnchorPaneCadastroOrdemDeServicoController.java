@@ -11,6 +11,7 @@ import br.edu.ifsc.fln.model.dao.ServicoDAO;
 import br.edu.ifsc.fln.model.dao.VeiculoDAO;
 import br.edu.ifsc.fln.model.database.Database;
 import br.edu.ifsc.fln.model.database.DatabaseFactory;
+import br.edu.ifsc.fln.model.domain.ItemOS;
 import br.edu.ifsc.fln.model.domain.OrdemServico;
 import br.edu.ifsc.fln.model.domain.Veiculo;
 import br.edu.ifsc.fln.utils.AlertDialog;
@@ -144,40 +145,9 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
     private void handleButtonInserir(ActionEvent event) throws IOException, SQLException {
         OrdemServico ordemServico = new OrdemServico();
         List<ItemOS> itensOS = new ArrayList<>();
-        ordemServico.setItensOS(itensOS);
-        boolean buttonConfirmarClicked = showFXMLAnchorPaneProcessoOrdemServicoDialog(ordemServico);
+        ordemServico.setItemOS(itensOS);
+        boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastroOrdemDeServicoDialog(ordemServico);
         if (buttonConfirmarClicked) {
-            //O código comentado a seguir (bloco try..catch) evidencia uma má prática de programação, haja vista que o boa parte da lógica de negócio está implementada no controller
-            //PROBLEMA: caso haja necessidade de levar esta aplicação para outro nível (uma aplicação web, por exemplo), todo esse código deverá ser repetido no controller, o que
-            //de fato pode se tornar inconsistente caso uma nova lógica seja necessária, implicando na necessidade de rever todos os controllers das aplicações, mas, o que garante
-            // que todas equipes farão isso?
-            //SOLUÇÃO: levar a lógica de negócio para o OrdemServicoDAO, afinal, estamos tratando de uma ordemServico. É ela que deve resolver o problema
-//            try {
-//                connection.setAutoCommit(false);
-//                ordemServicoDAO.setConnection(connection);
-//                ordemServicoDAO.inserir(ordemServico);
-//                itemOSDAO.setConnection(connection);
-//                produtoDAO.setConnection(connection);
-//                estoqueDAO.setConnection(connection);
-//                for (ItemOS itemOS: ordemServico.getItensOS()) {
-//                    Servico produto = itemOS.getServico();
-//                    itemOS.setOrdemServico(ordemServicoDAO.buscarUltimaOrdemServico());
-//                    itemOSDAO.inserir(itemOS);
-//                    produto.getEstoque().setQuantidade(
-//                            produto.getEstoque().getQuantidade() - itemOS.getQuantidade());
-//                    estoqueDAO.atualizar(produto.getEstoque());
-//                }
-//                connection.commit();
-//                carregarTableView();
-//            } catch (SQLException exc) {
-//                try {
-//                    connection.rollback();
-//                } catch (SQLException exc1) {
-//                    Logger.getLogger(FXMLAnchorPaneProcessoOrdemServicoController.class.getName()).log(Level.SEVERE, null, exc1);
-//                }
-//                Logger.getLogger(FXMLAnchorPaneProcessoOrdemServicoController.class.getName()).log(Level.SEVERE, null, exc);
-//            }   
-//        }
             ordemServicoDAO.setConnection(connection);
             ordemServicoDAO.inserir(ordemServico);
             carregarTableView();
@@ -186,9 +156,9 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
 
     @FXML
     private void handleButtonAlterar(ActionEvent event) throws IOException {
-        OrdemServico ordemServico = tableView.getSelectionModel().getSelectedItem();
+        OrdemServico ordemServico = tableViewOrdemDeServico.getSelectionModel().getSelectedItem();
         if (ordemServico != null) {
-            boolean buttonConfirmarClicked = showFXMLAnchorPaneProcessoOrdemServicoDialog(ordemServico);
+            boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastroOrdemDeServicoDialog(ordemServico);
             if (buttonConfirmarClicked) {
                 ordemServicoDAO.alterar(ordemServico);
                 carregarTableView();
@@ -202,9 +172,9 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
 
     @FXML
     private void handleButtonRemover(ActionEvent event) throws SQLException {
-        OrdemServico ordemServico = tableView.getSelectionModel().getSelectedItem();
+        OrdemServico ordemServico = tableViewOrdemDeServico.getSelectionModel().getSelectedItem();
         if (ordemServico != null) {
-            if (AlertDialog.confirmarExclusao("Tem certeza que deseja excluir a ordemServico " + ordemServico.getId())) {
+            if (AlertDialog.confirmarExclusao("Tem certeza que deseja excluir a ordemServico " + ordemServico.getNumero())) {
                 ordemServicoDAO.setConnection(connection);
                 ordemServicoDAO.remover(ordemServico);
                 carregarTableView();
@@ -216,9 +186,9 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
         }
     }
 
-    public boolean showFXMLAnchorPaneProcessoOrdemServicoDialog(OrdemServico ordemServico) throws IOException {
+    public boolean showFXMLAnchorPaneCadastroOrdemDeServicoDialog(OrdemServico ordemServico) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(FXMLAnchorPaneProcessoOrdemServicoDialogController.class.getResource(
+        loader.setLocation(FXMLAnchorPaneCadastroOrdemDeServicoController.class.getResource(
                 "/view/FXMLAnchorPaneProcessoOrdemServicoDialog.fxml"));
         AnchorPane page = (AnchorPane) loader.load();
 
@@ -229,7 +199,7 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
         dialogStage.setScene(scene);
 
         //Setando o ordemServico ao controller
-        FXMLAnchorPaneProcessoOrdemServicoDialogController controller = loader.getController();
+        FXMLAnchorPaneCadastroOrdemDeServicoDialogController controller = loader.getController();
         controller.setDialogStage(dialogStage);
         controller.setOrdemServico(ordemServico);
 

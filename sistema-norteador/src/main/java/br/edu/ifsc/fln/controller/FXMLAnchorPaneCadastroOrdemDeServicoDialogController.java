@@ -7,19 +7,16 @@ package br.edu.ifsc.fln.controller;
 
 import br.edu.ifsc.fln.model.dao.CorDAO;
 import br.edu.ifsc.fln.model.dao.ModeloDAO;
+import br.edu.ifsc.fln.model.dao.ServicoDAO;
+import br.edu.ifsc.fln.model.dao.VeiculoDAO;
 import br.edu.ifsc.fln.model.database.Database;
 import br.edu.ifsc.fln.model.database.DatabaseFactory;
-import br.edu.ifsc.fln.model.domain.Cor;
-import br.edu.ifsc.fln.model.domain.Modelo;
-import br.edu.ifsc.fln.model.domain.Veiculo;
+import br.edu.ifsc.fln.model.domain.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -35,41 +32,68 @@ import java.util.ResourceBundle;
 public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Initializable {
 
     @FXML
+    private Button btAdicionar;
+
+    @FXML
     private Button btCancelar;
 
     @FXML
     private Button btConfirmar;
 
     @FXML
-    private ComboBox<Cor> cbCor;
+    private ComboBox<Servico> cbServico;
 
     @FXML
-    private ComboBox<Modelo> cbModelo;
+    private ComboBox<EStatus> cbStatus;
 
     @FXML
-    private TextField tfObservacoes;
+    private ComboBox<Veiculo> cbVeiculo;
 
     @FXML
-    private TextField tfPlaca;
+    private DatePicker dpData;
 
+    @FXML
+    private TableColumn<ItemOS, String> tableColumnObservacao;
+
+    @FXML
+    private TableColumn<ItemOS, Servico> tableColumnServico;
+
+    @FXML
+    private TableColumn<ItemOS, Double> tableColumnValor;
+
+    @FXML
+    private TableView<ItemOS> tableViewItensOS;
+
+    private List<Veiculo> listaVeiculos;
+    private List<Servico> listaServicos;
+    private ObservableList<Veiculo> observableListVeiculos;
+    private ObservableList<Servico> observableListServicos;
+    private ObservableList<ItemOS> observableListItensOS;
+
+    //atributos para manipulação de banco de dados
     private final Database database = DatabaseFactory.getDatabase("mysql");
     private final Connection connection = database.conectar();
-    private final ModeloDAO modeloDAO = new ModeloDAO();
-    private final CorDAO corDAO = new CorDAO();
-    
+    private final VeiculoDAO veiculoDAO = new VeiculoDAO();
+    private final ServicoDAO servicoDAO = new ServicoDAO();
+
     private Stage dialogStage;
     private boolean buttonConfirmarClicked = false;
-    private Veiculo veiculo;  
+    private OrdemServico ordemServico;
     
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        modeloDAO.setConnection(connection);
-        corDAO.setConnection(connection);
-        carregarComboBoxModelos();
-        carregarComboBoxCores();
+        veiculoDAO.setConnection(connection);
+        servicoDAO.setConnection(connection);
+        carregarComboBoxVeiculos();
+        carregarComboBoxServicos();
+        carregarChoiceBoxSituacao();
+        setFocusLostHandle();
+        tableColumnServico.setCellValueFactory(new PropertyValueFactory<>("servico"));
+        tableColumnObservacao.setCellValueFactory(new PropertyValueFactory<>("observacao"));
+        tableColumnValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
     }
     
     private List<Modelo> listaModelos;
