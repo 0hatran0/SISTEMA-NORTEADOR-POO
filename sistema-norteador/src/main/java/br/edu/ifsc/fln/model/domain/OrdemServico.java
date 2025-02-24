@@ -33,7 +33,9 @@ public class OrdemServico {
         this.numero = numero;
     }
 
-    public double getTotal() { return total; }
+    public double getTotal() {
+        calcularServico();
+        return total; }
 
     public LocalDate getAgenda() {
         return agenda;

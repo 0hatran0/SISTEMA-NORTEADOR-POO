@@ -40,24 +40,30 @@ CREATE TABLE IF NOT EXISTS modelo(
 
 /*TABELA MOTOR COM RELACIONAMENTO 1:1 PARA MODELO - COMPOSIÇÃO*/
 CREATE TABLE IF NOT EXISTS motor(
-    id_modelo int NOT NULL REFERENCES modelo(id),
+    id_modelo int NOT NULL,
     potencia int NOT NULL DEFAULT 0,
     tipo_combustivel ENUM('GASOLINA', 'ETANOL', 'FLEX', 'DIESEL', 'GNV', 'OUTRO') 
     NOT NULL DEFAULT 'GASOLINA',
     CONSTRAINT pk_motor 
         PRIMARY KEY (id_modelo),
     CONSTRAINT fk_motor_modelo 
-        FOREIGN KEY (id_modelo) REFERENCES modelo(id) ON DELETE CASCADE
+        FOREIGN KEY (id_modelo)
+        REFERENCES modelo(id)
+        ON DELETE CASCADE
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS veiculo(
     id int NOT NULL auto_increment,
     placa varchar(10) NOT NULL,
-    observacoes varchar(350) DEFAULT 'Não informado',
+    observacoes varchar(350) NOT NULL DEFAULT 'Não informado',
+    id_cliente int NOT NULL,
     id_modelo int NOT NULL,
     id_cor int NOT NULL,
     CONSTRAINT pk_veiculo
       PRIMARY KEY(id),
+    CONSTRAINT fk_veiculo_cliente
+      FOREIGN KEY(id_cliente)
+      REFERENCES cliente(id),
     CONSTRAINT fk_veiculo_modelo
       FOREIGN KEY(id_modelo)
       REFERENCES modelo(id),
@@ -119,7 +125,7 @@ CREATE TABLE ordem_de_servico(
 CREATE TABLE item_da_ordem(
     id int NOT NULL auto_increment,
     valorServico decimal(10,2) NOT NULL,
-    observacao VARCHAR(300) NOT NULL,
+    observacao VARCHAR(300) NOT NULL DEFAULT 'Não informado',
     id_servico int NOT NULL,
     id_os int NOT NULL,
     CONSTRAINT pk_item_da_ordem

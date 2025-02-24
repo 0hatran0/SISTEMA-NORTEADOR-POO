@@ -18,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +27,8 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -147,16 +150,15 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
     }
 
     private void setFocusLostHandle() {
-//        textFieldDesconto.focusedProperty().addListener((ov, oldV, newV) -> {
-//            if (!newV) { // focus lost
-//                if (textFieldDesconto.getText() != null && !textFieldDesconto.getText().isEmpty()) {
-//                    //System.out.println("teste focus lost");
-//                    venda.setTaxaDesconto(Double.parseDouble(textFieldDesconto.getText()));
-//                    textFieldValor.setText(venda.getTotal().toString());
-//
-//                }
-//            }
-//        });
+        tfDesconto.focusedProperty().addListener((ov, oldV, newV) -> {
+            if (!newV) { // focus lost
+                if (tfDesconto.getText() != null && !tfDesconto.getText().isEmpty()) {
+                    //System.out.println("teste focus lost");
+                    ordemServico.setDesconto(Double.parseDouble(tfDesconto.getText()));
+                    tfTotal.setText(String.format("%.2f", ordemServico.getTotal()));
+                }
+            }
+        });
     }
 
     /**
@@ -224,21 +226,20 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
             itemOS.setValorServico(servico.getValor());
             itemOS.setObservacoes(itemOS.getObservacoes());
             itemOS.setOrdemServico(ordemServico);
-            itemDeVenda.setVenda(venda);
-            venda.getItensDeVenda().add(itemDeVenda);
-            observableListItensDeVenda = FXCollections.observableArrayList(venda.getItensDeVenda());
-            tableViewItensDeVenda.setItems(observableListItensDeVenda);
-            textFieldValor.setText(String.format("%.2f", venda.getTotal()));
+            ordemServico.getItemOS().add(itemOS);
+            observableListItensOS = FXCollections.observableArrayList(ordemServico.getItemOS());
+            tableViewItensOS.setItems(observableListItensOS);
+            tfTotal.setText(String.format("%.2f", ordemServico.getTotal()));
         }
     }
-    
+
     @FXML
     private void handleBtConfirmar() {
         if (validarEntradaDeDados()) {
-            veiculo.setPlaca(tfPlaca.getText());
-            veiculo.setObservacoes(tfObservacoes.getText());
-            veiculo.setModelo(cbModelo.getSelectionModel().getSelectedItem());
-            veiculo.setCor(cbCor.getSelectionModel().getSelectedItem());
+            ordemServico.setVeiculo(cbVeiculo.getSelectionModel().getSelectedItem());
+            ordemServico.setAgenda(dpData.getValue());
+            ordemServico.setStatus((EStatus)cbStatus.getSelectionModel().getSelectedItem());
+            ordemServico.setDesconto(Double.parseDouble(tfDesconto.getText()));
             buttonConfirmarClicked = true;
             dialogStage.close();
         }
@@ -265,75 +266,68 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
 
     @FXML
     private void handleContextMenuItemAtualizarQtd() {
-        ItemDeVenda itemDeVenda
-                = tableViewItensDeVenda.getSelectionModel().getSelectedItem();
-        int index = tableViewItensDeVenda.getSelectionModel().getSelectedIndex();
-
-        int qtdAtualizada = Integer.parseInt(inputDialog(itemDeVenda.getQuantidade()));
-        if (itemDeVenda.getProduto().getEstoque().getQuantidade() >= qtdAtualizada) {
-            itemDeVenda.setQuantidade(qtdAtualizada);
-            //venda.getItensDeVenda().set(venda.getItensDeVenda().indexOf(itemDeVenda),itemDeVenda);
-            venda.getItensDeVenda().set(index, itemDeVenda);
-            itemDeVenda.setValor(itemDeVenda.getProduto().getPreco().multiply(BigDecimal.valueOf(itemDeVenda.getQuantidade())));
-            tableViewItensDeVenda.refresh();
-            textFieldValor.setText(String.format("%.2f", venda.getTotal()));
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Erro no estoque");
-            alert.setContentText("Não há quantidade suficiente de produtos para venda.");
-            alert.show();
-        }
+        ItemOS itemOS
+                = tableViewItensOS.getSelectionModel().getSelectedItem();
+        int index = tableViewItensOS.getSelectionModel().getSelectedIndex();
+        ordemServico.getItemOS().set(index, itemOS);
+        itemOS.setValorServico(itemOS.getServico().getValor());
+        itemOS.setObservacoes(itemOS.getObservacoes());
+        tableViewItensOS.refresh();
+        tfTotal.setText(String.format("%.2f", ordemServico.getTotal()));
     }
 
-    private String inputDialog(int value) {
-        TextInputDialog dialog = new TextInputDialog(Integer.toString(value));
-        dialog.setTitle("Entrada de dados.");
-        dialog.setHeaderText("Atualização da quantidade de produtos.");
-        dialog.setContentText("Quantidade: ");
-
-        // Traditional way to get the response value.
-        Optional<String> result = dialog.showAndWait();
-        return result.get();
-    }
+//    private String inputDialog(int value) {
+//        TextInputDialog dialog = new TextInputDialog(Integer.toString(value));
+//        dialog.setTitle("Entrada de dados.");
+//        dialog.setHeaderText("Atualização da quantidade de produtos.");
+//        dialog.setContentText("Quantidade: ");
+//
+//        // Traditional way to get the response value.
+//        Optional<String> result = dialog.showAndWait();
+//        return result.get();
+//    }
 
     @FXML
     private void handleContextMenuItemRemoverItem() {
-        ItemDeVenda itemDeVenda
-                = tableViewItensDeVenda.getSelectionModel().getSelectedItem();
-        int index = tableViewItensDeVenda.getSelectionModel().getSelectedIndex();
-        venda.getItensDeVenda().remove(index);
-        observableListItensDeVenda = FXCollections.observableArrayList(venda.getItensDeVenda());
-        tableViewItensDeVenda.setItems(observableListItensDeVenda);
+        ItemOS itemOS
+                = tableViewItensOS.getSelectionModel().getSelectedItem();
+        int index = tableViewItensOS.getSelectionModel().getSelectedIndex();
+        ordemServico.getItemOS().remove(index);
+        observableListItensOS = FXCollections.observableArrayList(ordemServico.getItemOS());
+        tableViewItensOS.setItems(observableListItensOS);
 
-        textFieldValor.setText(String.format("%.2f", venda.getTotal()));
+        tfTotal.setText(String.format("%.2f", ordemServico.getTotal()));
     }
-    
-        //validar entrada de dados do cadastro
+
+    //validar entrada de dados do cadastro
     private boolean validarEntradaDeDados() {
         String errorMessage = "";
-        
-        if (tfPlaca.getText() == null || this.tfPlaca.getText().length() == 0) {
-            errorMessage += "Placa inválido.\n";
+
+        if (cbVeiculo.getSelectionModel().getSelectedItem() == null) {
+            errorMessage += "Veiculo inválido!\n";
         }
 
-        if (tfObservacoes.getText() == null || this.tfObservacoes.getText().length() == 0) {
-            errorMessage += "Observação inválido.\n";
-        }
-        
-        if (cbModelo.getSelectionModel().getSelectedItem() == null) {
-            errorMessage += "Selecione um modelo para veiculo!\n";
+        if (dpData.getValue() == null) {
+            errorMessage += "Data inválida!\n";
         }
 
-        if (cbCor.getSelectionModel().getSelectedItem() == null) {
-            errorMessage += "Selecione uma cor para veiculo!\n";
+        if (observableListItensOS == null) {
+            errorMessage += "Itens da ordem de serviço inválidos!\n";
         }
-        
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        try {
+            tfDesconto.setText(df.parse(tfDesconto.getText()).toString());
+        } catch (ParseException ex) {
+            errorMessage += "A taxa de desconto está incorreta! Use \",\" como ponto decimal.\n";
+        }
+
         if (errorMessage.length() == 0) {
             return true;
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erro no cadastro");
-            alert.setHeaderText("Campo(s) inválido(s), por favor corrija...");
+            alert.setHeaderText("Campos inválidos, por favor corrija...");
             alert.setContentText(errorMessage);
             alert.show();
             return false;

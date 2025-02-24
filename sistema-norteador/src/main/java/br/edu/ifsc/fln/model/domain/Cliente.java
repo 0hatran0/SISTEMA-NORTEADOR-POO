@@ -2,6 +2,9 @@ package br.edu.ifsc.fln.model.domain;
 
 //import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Cliente {
     protected int id;
     protected String nome;
@@ -9,7 +12,8 @@ public abstract class Cliente {
     protected String email;
     protected String dataCadastro;
 
-//    protected static String dataCadastro;
+//    protected Pontuacao pontuacao = new Pontuacao();
+//    private List<Veiculo> veiculos = new ArrayList<>();
 
     public Cliente() {
     }
@@ -22,6 +26,14 @@ public abstract class Cliente {
         this.email = email;
         this.dataCadastro = dataCadastro;
     }
+
+//    public Pontuacao getPontuacao() {
+//        return pontuacao;
+//    }
+//
+//    public List<Veiculo> getVeiculos() {
+//        return veiculos;
+//    }
 
     public int getId() {
         return id;
@@ -62,6 +74,21 @@ public abstract class Cliente {
     public void setDataCadastro(String dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
+
+//    public void setVeiculo(List<Veiculo> veiculos) {
+//        this.veiculos = veiculos;
+//    }
+
+//    public void add(Veiculo veiculo) {
+//        this.veiculos.add(veiculo);
+//        veiculo.setCliente(this);
+//    }
+//
+//    public void remove(Veiculo veiculo) {
+//        this.veiculos.remove(veiculo);
+//        veiculo.setCliente(null);
+//    }
+
 
     @Override
     public String toString() {
