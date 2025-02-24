@@ -14,14 +14,20 @@ import br.edu.ifsc.fln.model.database.DatabaseFactory;
 import br.edu.ifsc.fln.model.domain.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -50,6 +56,15 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
     private ComboBox<Veiculo> cbVeiculo;
 
     @FXML
+    private MenuItem contextMenuItemAtualizarQtd;
+
+    @FXML
+    private MenuItem contextMenuItemRemoverItem;
+
+    @FXML
+    private ContextMenu contextMenuTableView;
+
+    @FXML
     private DatePicker dpData;
 
     @FXML
@@ -63,6 +78,15 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
 
     @FXML
     private TableView<ItemOS> tableViewItensOS;
+
+    @FXML
+    private TextField tfDesconto;
+
+    @FXML
+    private TextField tfTotal;
+
+    @FXML
+    private TextField tfValor;
 
     private List<Veiculo> listaVeiculos;
     private List<Servico> listaServicos;
@@ -96,26 +120,45 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
         tableColumnValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
     }
     
-    private List<Modelo> listaModelos;
-    private ObservableList<Modelo> observableListModelos; 
-    
-    public void carregarComboBoxModelos() {
-        listaModelos = modeloDAO.listar();
-        observableListModelos = 
-                FXCollections.observableArrayList(listaModelos);
-        cbModelo.setItems(observableListModelos);
+    public void carregarComboBoxVeiculos() {
+        listaVeiculos = veiculoDAO.listar();
+        observableListVeiculos =
+                FXCollections.observableArrayList(listaVeiculos);
+        cbVeiculo.setItems(observableListVeiculos);
     }
 
-    private List<Cor> listaCores;
-    private ObservableList<Cor> observableListCores;
-
-    public void carregarComboBoxCores() {
-        listaCores = corDAO.listar();
-        observableListCores =
-                FXCollections.observableArrayList(listaCores);
-        cbCor.setItems(observableListCores);
+    public void carregarComboBoxServicos() {
+        listaServicos = servicoDAO.listar();
+        observableListServicos =
+                FXCollections.observableArrayList(listaServicos);
+        cbServico.setItems(observableListServicos);
     }
-    
+
+    public void carregarChoiceBoxSituacao() {
+            cbStatus.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
+                    event.consume();
+                }
+            }
+        });
+        cbStatus.setItems( FXCollections.observableArrayList( EStatus.values()));
+    }
+
+    private void setFocusLostHandle() {
+//        textFieldDesconto.focusedProperty().addListener((ov, oldV, newV) -> {
+//            if (!newV) { // focus lost
+//                if (textFieldDesconto.getText() != null && !textFieldDesconto.getText().isEmpty()) {
+//                    //System.out.println("teste focus lost");
+//                    venda.setTaxaDesconto(Double.parseDouble(textFieldDesconto.getText()));
+//                    textFieldValor.setText(venda.getTotal().toString());
+//
+//                }
+//            }
+//        });
+    }
+
     /**
      * @return the dialogStage
      */
@@ -145,22 +188,49 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
     }
 
     /**
-     * @return the veiculo
+     * @return the ordemServico
      */
-    public Veiculo getVeiculo() {
-        return veiculo;
+    public OrdemServico getOrdemServico() {
+        return ordemServico;
     }
 
     /**
-     * @param veiculo the veiculo to set
+     * @param ordemServico the ordemServico to set
      */
-    public void setVeiculo(Veiculo veiculo) {
-        this.veiculo = veiculo;
-        this.tfPlaca.setText(this.veiculo.getPlaca());
-        this.tfObservacoes.setText(this.veiculo.getObservacoes());
-        this.cbModelo.getSelectionModel().select(this.veiculo.getModelo());
-        this.cbCor.getSelectionModel().select(this.veiculo.getCor());
-    }    
+    public void setOrdemServico(OrdemServico ordemServico) {
+        this.ordemServico = ordemServico;
+        if (ordemServico.getNumero() != 0) {
+            cbVeiculo.getSelectionModel().select(this.ordemServico.getVeiculo());
+            dpData.setValue(this.ordemServico.getAgenda());
+            observableListItensOS = FXCollections.observableArrayList(
+                    this.ordemServico.getItemOS());
+            tableViewItensOS.setItems(observableListItensOS);
+            tfDesconto.setText(String.format("%.2f", this.ordemServico.getDesconto()));
+            tfTotal.setText(String.format("%.2f", this.ordemServico.getTotal()));
+            cbStatus.getSelectionModel().select(this.ordemServico.getStatus());
+        }
+    }
+
+    @FXML
+    void handleBtAdicionar() {
+        Servico servico;
+        ItemOS itemOS = new ItemOS();
+        if (cbServico.getSelectionModel().getSelectedItem() != null) {
+            //o comboBox possui dados sintetizados de Produto para evitar carga desnecessária de informação
+            servico = cbServico.getSelectionModel().getSelectedItem();
+            //a instrução a seguir busca detalhes do produto selecionado
+            servico  = servicoDAO.buscar(servico);
+            itemOS.setServico(servico);
+            itemOS.setValorServico(servico.getValor());
+            itemOS.setObservacoes(itemOS.getObservacoes());
+            itemOS.setOrdemServico(ordemServico);
+            itemDeVenda.setVenda(venda);
+            venda.getItensDeVenda().add(itemDeVenda);
+            observableListItensDeVenda = FXCollections.observableArrayList(venda.getItensDeVenda());
+            tableViewItensDeVenda.setItems(observableListItensDeVenda);
+            textFieldValor.setText(String.format("%.2f", venda.getTotal()));
+        }
+    }
     
     @FXML
     private void handleBtConfirmar() {
@@ -177,6 +247,65 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
     @FXML
     private void handleBtCancelar() {
         dialogStage.close();
+    }
+
+    @FXML
+    void handleTableViewMouseClicked(MouseEvent event) {
+        ItemOS itemOS
+                = tableViewItensOS.getSelectionModel().getSelectedItem();
+        if (itemOS == null) {
+            contextMenuItemAtualizarQtd.setDisable(true);
+            contextMenuItemRemoverItem.setDisable(true);
+        } else {
+            contextMenuItemAtualizarQtd.setDisable(false);
+            contextMenuItemRemoverItem.setDisable(false);
+        }
+
+    }
+
+    @FXML
+    private void handleContextMenuItemAtualizarQtd() {
+        ItemDeVenda itemDeVenda
+                = tableViewItensDeVenda.getSelectionModel().getSelectedItem();
+        int index = tableViewItensDeVenda.getSelectionModel().getSelectedIndex();
+
+        int qtdAtualizada = Integer.parseInt(inputDialog(itemDeVenda.getQuantidade()));
+        if (itemDeVenda.getProduto().getEstoque().getQuantidade() >= qtdAtualizada) {
+            itemDeVenda.setQuantidade(qtdAtualizada);
+            //venda.getItensDeVenda().set(venda.getItensDeVenda().indexOf(itemDeVenda),itemDeVenda);
+            venda.getItensDeVenda().set(index, itemDeVenda);
+            itemDeVenda.setValor(itemDeVenda.getProduto().getPreco().multiply(BigDecimal.valueOf(itemDeVenda.getQuantidade())));
+            tableViewItensDeVenda.refresh();
+            textFieldValor.setText(String.format("%.2f", venda.getTotal()));
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Erro no estoque");
+            alert.setContentText("Não há quantidade suficiente de produtos para venda.");
+            alert.show();
+        }
+    }
+
+    private String inputDialog(int value) {
+        TextInputDialog dialog = new TextInputDialog(Integer.toString(value));
+        dialog.setTitle("Entrada de dados.");
+        dialog.setHeaderText("Atualização da quantidade de produtos.");
+        dialog.setContentText("Quantidade: ");
+
+        // Traditional way to get the response value.
+        Optional<String> result = dialog.showAndWait();
+        return result.get();
+    }
+
+    @FXML
+    private void handleContextMenuItemRemoverItem() {
+        ItemDeVenda itemDeVenda
+                = tableViewItensDeVenda.getSelectionModel().getSelectedItem();
+        int index = tableViewItensDeVenda.getSelectionModel().getSelectedIndex();
+        venda.getItensDeVenda().remove(index);
+        observableListItensDeVenda = FXCollections.observableArrayList(venda.getItensDeVenda());
+        tableViewItensDeVenda.setItems(observableListItensDeVenda);
+
+        textFieldValor.setText(String.format("%.2f", venda.getTotal()));
     }
     
         //validar entrada de dados do cadastro

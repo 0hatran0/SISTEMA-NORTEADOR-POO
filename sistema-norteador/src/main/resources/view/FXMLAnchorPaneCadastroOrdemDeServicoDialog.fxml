@@ -4,8 +4,10 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -15,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="AnchorPane" prefHeight="405.0" prefWidth="465.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifsc.fln.controller.FXMLAnchorPaneCadastroVeiculoDialogController">
+<AnchorPane id="AnchorPane" prefHeight="405.0" prefWidth="465.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifsc.fln.controller.FXMLAnchorPaneCadastroOrdemDeServicoDialogController">
    <children>
       <GridPane layoutX="34.0" layoutY="37.0" prefHeight="159.0" prefWidth="417.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="24.0">
         <columnConstraints>
@@ -76,15 +78,23 @@
                <children>
                   <ComboBox fx:id="cbServico" prefHeight="25.0" prefWidth="196.0" promptText="Selecione" />
                   <TextField fx:id="tfValor" />
-                  <Button fx:id="btAdicionar" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" text="+" />
+                  <Button fx:id="btAdicionar" mnemonicParsing="false" onAction="#handleBtAdicionar" prefHeight="25.0" prefWidth="62.0" text="+" />
                </children>
             </HBox>
-            <TableView fx:id="tableViewItensOS" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <TableView fx:id="tableViewItensOS" onMouseClicked="#handleTableViewMouseClicked" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
               <columns>
                 <TableColumn fx:id="tableColumnServico" prefWidth="175.0" text="Serviço" />
                 <TableColumn fx:id="tableColumnValor" prefWidth="74.0" text="Valor" />
                   <TableColumn fx:id="tableColumnObservacao" prefWidth="91.0" text="Obs" />
               </columns>
+               <contextMenu>
+                  <ContextMenu>
+                    <items>
+                        <MenuItem fx:id="contextMenuItemAtualizarQtd2111" mnemonicParsing="false" onAction="#handleContextMenuItemAtualizarQtd" text="AtualizarQuantidade" />
+                        <MenuItem fx:id="contextMenuItemAtualizarQtd21111" mnemonicParsing="false" onAction="#handleContextMenuItemRemoverItem" text="Remover Item" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu>
             </TableView>
          </children>
       </GridPane>
