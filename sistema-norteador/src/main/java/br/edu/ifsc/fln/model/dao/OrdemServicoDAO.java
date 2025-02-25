@@ -1,5 +1,6 @@
 package br.edu.ifsc.fln.model.dao;
 
+import br.edu.ifsc.fln.exception.DAOException;
 import br.edu.ifsc.fln.model.domain.*;
 
 import java.sql.*;
@@ -20,7 +21,7 @@ public class OrdemServicoDAO {
         this.connection = connection;
     }
 
-    public boolean inserir(OrdemServico ordemServico) {
+    public boolean inserir(OrdemServico ordemServico) throws DAOException {
         String sql = "INSERT INTO ordem_de_servico(total, agenda, desconto, situacao, id_veiculo) VALUES(?,?,?,?,?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -50,18 +51,19 @@ public class OrdemServicoDAO {
                 connection.rollback();
             } catch (SQLException ex1) {
                 Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex1);
+                throw new DAOException("Não foi possível inserir o registro no banco de dados!", ex1);
             }
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível inserir o registro no banco de dados!", ex);
         } catch (Exception ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível inserir o registro no banco de dados!", ex);
         } finally {
 
         }
     }
     // Analisar novamente
-    public boolean alterar(OrdemServico ordemServico) {
+    public boolean alterar(OrdemServico ordemServico) throws DAOException {
         String sql = "UPDATE ordem_de_servico SET total=?, agenda=?, desconto=?, situacao=?, id_veiculo=? WHERE numero=?";
         try {
             connection.setAutoCommit(false);
@@ -97,16 +99,17 @@ public class OrdemServicoDAO {
                 connection.rollback();
             } catch (SQLException exc1) {
                 Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, exc1);
+                throw new DAOException("Não foi possível atualizar o registro no banco de dados.", exc1);
             }
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível atualizar o registro no banco de dados.", ex);
         } catch (Exception ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível atualizar o registro no banco de dados.", ex);
         }
     }
 
-    public boolean remover(OrdemServico ordemServico) {
+    public boolean remover(OrdemServico ordemServico) throws DAOException {
         String sql = "DELETE FROM ordem_de_servico WHERE numero=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -124,20 +127,22 @@ public class OrdemServicoDAO {
                     connection.rollback();
                 } catch (SQLException exc1) {
                     Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, exc1);
+                    throw new DAOException("Não foi possível excluir  o registro do banco de dados.", exc1);
                 }
                 Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, exc);
+                throw new DAOException("Não foi possível excluir  o registro do banco de dados.", exc);
             }
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível excluir  o registro do banco de dados.", ex);
         } catch (Exception ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível excluir  o registro do banco de dados.", ex);
         }
     }
 
-    public List<OrdemServico> listar() {
+    public List<OrdemServico> listar() throws DAOException {
         String sql = "SELECT * FROM ordem_de_servico";
         List<OrdemServico> retorno = new ArrayList<>();
         try {
@@ -169,11 +174,12 @@ public class OrdemServicoDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public OrdemServico buscar(OrdemServico ordemServico) {
+    public OrdemServico buscar(OrdemServico ordemServico) throws DAOException {
         String sql = "SELECT * FROM ordem_de_servico WHERE numero=?";
         OrdemServico retorno = new OrdemServico();
         try {
@@ -191,11 +197,12 @@ public class OrdemServicoDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public OrdemServico buscar(int id) {
+    public OrdemServico buscar(int id) throws DAOException {
         String sql = "SELECT * FROM ordem_de_servico WHERE numero=?";
         OrdemServico retorno = new OrdemServico();
         try {
@@ -213,11 +220,12 @@ public class OrdemServicoDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public OrdemServico buscarUltimaOrdemServico() {
+    public OrdemServico buscarUltimaOrdemServico() throws DAOException {
         String sql = "SELECT max(numero) as max FROM ordem_de_servico";
         // Alterar o nome da databela "max"
         OrdemServico retorno = new OrdemServico();
@@ -231,6 +239,7 @@ public class OrdemServicoDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }

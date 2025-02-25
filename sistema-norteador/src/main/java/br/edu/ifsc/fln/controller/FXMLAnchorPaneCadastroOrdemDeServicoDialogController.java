@@ -112,6 +112,7 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
         carregarComboBoxServicos();
         carregarChoiceBoxSituacao();
         setFocusLostHandle();
+        // Procurar no objeto itemOS os valores de servico e valorServico
         tableColumnServico.setCellValueFactory(new PropertyValueFactory<>("servico"));
         tableColumnValor.setCellValueFactory(new PropertyValueFactory<>("valorServico"));
     }

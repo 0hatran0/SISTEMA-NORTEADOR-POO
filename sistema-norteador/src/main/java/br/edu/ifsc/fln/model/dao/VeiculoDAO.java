@@ -1,8 +1,6 @@
 package br.edu.ifsc.fln.model.dao;
 
-import br.edu.ifsc.fln.model.domain.Cor;
-import br.edu.ifsc.fln.model.domain.Modelo;
-import br.edu.ifsc.fln.model.domain.Veiculo;
+import br.edu.ifsc.fln.model.domain.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,14 +24,15 @@ public class VeiculoDAO {
     }
 
     public boolean inserir(Veiculo veiculo) {
-        final String sql = "INSERT INTO veiculo(placa, observacoes, id_modelo, id_cor) VALUES(?,?,?,?);";
+        final String sql = "INSERT INTO veiculo(placa, observacoes, id_cliente, id_modelo, id_cor) VALUES(?,?,?,?,?);";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             //registra o modelo
             stmt.setString(1, veiculo.getPlaca());
             stmt.setString(2, veiculo.getObservacoes());
-            stmt.setInt(3, veiculo.getModelo().getId());
-            stmt.setInt(4, veiculo.getCor().getId());
+            stmt.setInt(3, veiculo.getCliente().getId());
+            stmt.setInt(4, veiculo.getModelo().getId());
+            stmt.setInt(5, veiculo.getCor().getId());
             stmt.execute();
             return true;
         } catch (SQLException ex) {
@@ -43,14 +42,15 @@ public class VeiculoDAO {
     }
 
     public boolean alterar(Veiculo veiculo) {
-        String sql = "UPDATE veiculo SET placa=?, observacoes=?, id_modelo=?, id_cor=? WHERE id=?;";
+        String sql = "UPDATE veiculo SET placa=?, observacoes=?, id_cliente=?, id_modelo=?, id_cor=? WHERE id=?;";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, veiculo.getPlaca());
             stmt.setString(2, veiculo.getObservacoes());
-            stmt.setInt(3, veiculo.getModelo().getId());
-            stmt.setInt(4, veiculo.getCor().getId());
-            stmt.setInt(5, veiculo.getId());
+            stmt.setInt(3, veiculo.getCliente().getId());
+            stmt.setInt(4, veiculo.getModelo().getId());
+            stmt.setInt(5, veiculo.getCor().getId());
+            stmt.setInt(6, veiculo.getId());
             stmt.execute();
             return true;
         } catch (SQLException ex) {
@@ -104,19 +104,33 @@ public class VeiculoDAO {
         return retorno;
     }
 
-//    public Cliente buscar(int id){return retorno;}
-
     private Veiculo populateVO(ResultSet rs) throws SQLException {
         Veiculo veiculo = new Veiculo();
         veiculo.setId(rs.getInt("id"));
         veiculo.setPlaca(rs.getString("placa"));
         veiculo.setObservacoes(rs.getString("observacoes"));
+        // Cliente
+        Cliente pessoaFisica = new PessoaFisica();
+        Cliente pessoaJuridica = new PessoaJuridica();
+        pessoaFisica.setId(rs.getInt("id_cliente"));
+        pessoaJuridica.setId(rs.getInt("id_cliente"));
+        ClienteDAO clienteDAO = new ClienteDAO();
+        clienteDAO.setConnection(connection);
+        pessoaFisica = clienteDAO.buscar(pessoaFisica);
+        pessoaJuridica = clienteDAO.buscar(pessoaJuridica);
+        if(pessoaFisica != null){
+            veiculo.setCliente(pessoaFisica);
+        }else{
+            veiculo.setCliente(pessoaJuridica);
+        }
+        // Modelo
         Modelo modelo = new Modelo();
         modelo.setId(rs.getInt("id_modelo"));
         ModeloDAO modeloDAO = new ModeloDAO();
         modeloDAO.setConnection(connection);
         modelo = modeloDAO.buscar(modelo);
         veiculo.setModelo(modelo);
+        // Cor
         Cor cor = new Cor();
         cor.setId(rs.getInt("id_cor"));
         CorDAO corDAO = new CorDAO();
@@ -125,5 +139,4 @@ public class VeiculoDAO {
         veiculo.setCor(cor);
         return veiculo;
     }
-
 }

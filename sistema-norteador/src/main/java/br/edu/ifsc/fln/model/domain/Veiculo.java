@@ -14,7 +14,7 @@ public class Veiculo {
     private String observacoes;
     private Modelo modelo;
     private Cor cor;
-//    private Cliente cliente;
+    private Cliente cliente;
     
     public Veiculo(){
     }
@@ -36,9 +36,9 @@ public class Veiculo {
         this.cor = cor;
     }
     
-//    public Cliente getCliente() {
-//        return cliente;
-//    }
+    public Cliente getCliente() {
+        return cliente;
+    }
     
     public int getId() {
         return id;
@@ -60,9 +60,9 @@ public class Veiculo {
         return cor;
     }
     
-//    public void setCliente(Cliente cliente) {
-//        this.cliente = cliente;
-//    } 
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
     public void setId(int id) {
         this.id = id;

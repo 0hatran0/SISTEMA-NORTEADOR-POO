@@ -1,5 +1,6 @@
 package br.edu.ifsc.fln.model.dao;
 
+import br.edu.ifsc.fln.exception.DAOException;
 import br.edu.ifsc.fln.model.domain.*;
 
 import java.sql.Connection;
@@ -23,8 +24,8 @@ public class ItemOSDAO {
         this.connection = connection;
     }
 
-    public boolean inserir(ItemOS itemOS) {
-        String sql = "INSERT INTO item_da_ordem(valorServico, observacao, id_servico, id_os) VALUES(?,?,?,?)";
+    public boolean inserir(ItemOS itemOS) throws DAOException {
+        String sql = "INSERT INTO item_da_ordem(valor_do_servico, observacao, id_servico, id_os) VALUES(?,?,?,?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setDouble(1, itemOS.getValorServico());
@@ -35,7 +36,7 @@ public class ItemOSDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível inserir o registro no banco de dados!", ex);
         }
     }
 
@@ -44,7 +45,7 @@ public class ItemOSDAO {
     }
 
     //Precisa desse remove? Ja possui o delete on cascade
-    public boolean remover(ItemOS itemOS) {
+    public boolean remover(ItemOS itemOS) throws DAOException {
         String sql = "DELETE FROM item_da_ordem WHERE id=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -53,11 +54,11 @@ public class ItemOSDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            throw new DAOException("Não foi possível excluir  o registro do banco de dados.", ex);
         }
     }
 
-    public List<ItemOS> listar() {
+    public List<ItemOS> listar() throws DAOException {
         String sql = "SELECT * FROM item_da_ordem";
         List<ItemOS> retorno = new ArrayList<>();
         try {
@@ -90,11 +91,12 @@ public class ItemOSDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public List<ItemOS> listarPorOrdem(OrdemServico ordemServico) {
+    public List<ItemOS> listarPorOrdem(OrdemServico ordemServico) throws DAOException {
         String sql = "SELECT * FROM item_da_ordem WHERE id_os=?";
         List<ItemOS> retorno = new ArrayList<>();
         try {
@@ -108,7 +110,7 @@ public class ItemOSDAO {
                 OrdemServico os = new OrdemServico();
                 //
                 itemOS.setId(resultado.getInt("id"));
-                itemOS.setValorServico(resultado.getDouble("valorServico"));
+                itemOS.setValorServico(resultado.getDouble("valor_do_servico"));
                 itemOS.setObservacoes(resultado.getString("observacao"));
 
                 servico.setId(resultado.getInt("id_servico"));
@@ -125,11 +127,12 @@ public class ItemOSDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public ItemOS buscar(ItemOS itemOS) {
+    public ItemOS buscar(ItemOS itemOS) throws DAOException {
         String sql = "SELECT * FROM item_da_ordem WHERE id=?";
         ItemOS retorno = new ItemOS();
         try {
@@ -162,6 +165,7 @@ public class ItemOSDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }

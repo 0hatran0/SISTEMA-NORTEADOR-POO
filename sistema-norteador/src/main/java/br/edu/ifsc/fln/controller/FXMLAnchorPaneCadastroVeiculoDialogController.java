@@ -5,6 +5,7 @@
  */
 package br.edu.ifsc.fln.controller;
 
+import br.edu.ifsc.fln.model.dao.ClienteDAO;
 import br.edu.ifsc.fln.model.dao.CorDAO;
 import br.edu.ifsc.fln.model.dao.ModeloDAO;
 import br.edu.ifsc.fln.model.dao.VeiculoDAO;
@@ -46,6 +47,9 @@ public class FXMLAnchorPaneCadastroVeiculoDialogController implements Initializa
     private ComboBox<Modelo> cbModelo;
 
     @FXML
+    private ComboBox<Cliente> cbCliente;
+
+    @FXML
     private TextField tfObservacoes;
 
     @FXML
@@ -53,6 +57,7 @@ public class FXMLAnchorPaneCadastroVeiculoDialogController implements Initializa
 
     private final Database database = DatabaseFactory.getDatabase("mysql");
     private final Connection connection = database.conectar();
+    private final ClienteDAO clienteDAO = new ClienteDAO();
     private final ModeloDAO modeloDAO = new ModeloDAO();
     private final CorDAO corDAO = new CorDAO();
     
@@ -65,15 +70,27 @@ public class FXMLAnchorPaneCadastroVeiculoDialogController implements Initializa
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        clienteDAO.setConnection(connection);
         modeloDAO.setConnection(connection);
         corDAO.setConnection(connection);
+        carregarComboBoxClientes();
         carregarComboBoxModelos();
         carregarComboBoxCores();
     }
+
+    private List<Cliente> listaClientes;
+    private ObservableList<Cliente> observableListClientes;
+
+    public void carregarComboBoxClientes() {
+        listaClientes = clienteDAO.listar();
+        observableListClientes =
+                FXCollections.observableArrayList(listaClientes);
+        cbCliente.setItems(observableListClientes);
+    }
     
     private List<Modelo> listaModelos;
-    private ObservableList<Modelo> observableListModelos; 
-    
+    private ObservableList<Modelo> observableListModelos;
+
     public void carregarComboBoxModelos() {
         listaModelos = modeloDAO.listar();
         observableListModelos = 
@@ -133,6 +150,7 @@ public class FXMLAnchorPaneCadastroVeiculoDialogController implements Initializa
         this.veiculo = veiculo;
         this.tfPlaca.setText(this.veiculo.getPlaca());
         this.tfObservacoes.setText(this.veiculo.getObservacoes());
+        this.cbCliente.getSelectionModel().select(this.veiculo.getCliente());
         this.cbModelo.getSelectionModel().select(this.veiculo.getModelo());
         this.cbCor.getSelectionModel().select(this.veiculo.getCor());
     }    
@@ -142,8 +160,11 @@ public class FXMLAnchorPaneCadastroVeiculoDialogController implements Initializa
         if (validarEntradaDeDados()) {
             veiculo.setPlaca(tfPlaca.getText());
             veiculo.setObservacoes(tfObservacoes.getText());
+            veiculo.setCliente(cbCliente.getSelectionModel().getSelectedItem());
             veiculo.setModelo(cbModelo.getSelectionModel().getSelectedItem());
             veiculo.setCor(cbCor.getSelectionModel().getSelectedItem());
+            // Duvida
+            veiculo.getCliente().add(veiculo);
             buttonConfirmarClicked = true;
             dialogStage.close();
         }
@@ -164,6 +185,10 @@ public class FXMLAnchorPaneCadastroVeiculoDialogController implements Initializa
 
         if (tfObservacoes.getText() == null || this.tfObservacoes.getText().length() == 0) {
             errorMessage += "Observação inválido.\n";
+        }
+
+        if (cbCliente.getSelectionModel().getSelectedItem() == null) {
+            errorMessage += "Selecione um cliente para veiculo!\n";
         }
         
         if (cbModelo.getSelectionModel().getSelectedItem() == null) {

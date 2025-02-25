@@ -52,6 +52,9 @@ public class FXMLAnchorPaneCadastroVeiculoController implements Initializable {
     private Label lbVeiculoId;
 
     @FXML
+    private Label lbVeiculoCliente;
+
+    @FXML
     private Label lbVeiculoModelo;
 
     @FXML
@@ -73,7 +76,6 @@ public class FXMLAnchorPaneCadastroVeiculoController implements Initializable {
     private final Database database = DatabaseFactory.getDatabase("mysql");
     private final Connection connection = database.conectar();
     private final VeiculoDAO veiculoDAO = new VeiculoDAO();
-//    private final MotorDAO motorDAO = new MotorDAO();
 
     /**
      * Initializes the controller class.
@@ -101,12 +103,14 @@ public class FXMLAnchorPaneCadastroVeiculoController implements Initializable {
             lbVeiculoId.setText(Integer.toString(veiculo.getId()));
             lbVeiculoPlaca.setText(veiculo.getPlaca());
             lbVeiculoObservacoes.setText(veiculo.getObservacoes());
+            lbVeiculoCliente.setText(veiculo.getCliente().getNome());
             lbVeiculoModelo.setText(veiculo.getModelo().getDescricao());
             lbVeiculoCor.setText(veiculo.getCor().getNome());
         } else {
             lbVeiculoId.setText("");
             lbVeiculoPlaca.setText("");
             lbVeiculoObservacoes.setText("");
+            lbVeiculoCliente.setText("");
             lbVeiculoModelo.setText("");
             lbVeiculoCor.setText("");
         }
@@ -118,6 +122,8 @@ public class FXMLAnchorPaneCadastroVeiculoController implements Initializable {
         Veiculo veiculo = new Veiculo();
         boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastrosVeiculosDialog(veiculo);
         if (buttonConfirmarClicked) {
+            // Adicionar ao cliente
+            veiculo.getCliente().add(veiculo);
             veiculoDAO.inserir(veiculo);
             carregarTableView();
         }
@@ -143,6 +149,8 @@ public class FXMLAnchorPaneCadastroVeiculoController implements Initializable {
     public void handleBtExcluir() throws IOException {
         Veiculo veiculo = tableViewVeiculos.getSelectionModel().getSelectedItem();
         if (veiculo != null) {
+            // Remover de cliente
+            veiculo.getCliente().remove(veiculo);
             veiculoDAO.remover(veiculo);
             carregarTableView();
         } else {
@@ -168,7 +176,7 @@ public class FXMLAnchorPaneCadastroVeiculoController implements Initializable {
         FXMLAnchorPaneCadastroVeiculoDialogController controller = loader.getController();
         controller.setDialogStage(dialogStage);
         controller.setVeiculo(veiculo);
-
+//        veiculo.getCliente().add(veiculo);
         dialogStage.showAndWait();
 
         return controller.isBtConfirmarClicked();

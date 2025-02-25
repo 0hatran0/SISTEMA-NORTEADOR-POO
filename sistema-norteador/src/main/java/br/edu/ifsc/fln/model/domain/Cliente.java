@@ -13,7 +13,7 @@ public abstract class Cliente {
     protected String dataCadastro;
 
 //    protected Pontuacao pontuacao = new Pontuacao();
-//    private List<Veiculo> veiculos = new ArrayList<>();
+    private List<Veiculo> veiculos = new ArrayList<>();
 
     public Cliente() {
     }
@@ -31,9 +31,9 @@ public abstract class Cliente {
 //        return pontuacao;
 //    }
 //
-//    public List<Veiculo> getVeiculos() {
-//        return veiculos;
-//    }
+    public List<Veiculo> getVeiculos() {
+        return veiculos;
+    }
 
     public int getId() {
         return id;
@@ -75,19 +75,19 @@ public abstract class Cliente {
         this.dataCadastro = dataCadastro;
     }
 
-//    public void setVeiculo(List<Veiculo> veiculos) {
-//        this.veiculos = veiculos;
-//    }
+    public void setVeiculo(List<Veiculo> veiculos) {
+        this.veiculos = veiculos;
+    }
 
-//    public void add(Veiculo veiculo) {
-//        this.veiculos.add(veiculo);
-//        veiculo.setCliente(this);
-//    }
-//
-//    public void remove(Veiculo veiculo) {
-//        this.veiculos.remove(veiculo);
-//        veiculo.setCliente(null);
-//    }
+    public void add(Veiculo veiculo) {
+        this.veiculos.add(veiculo);
+        veiculo.setCliente(this);
+    }
+
+    public void remove(Veiculo veiculo) {
+        this.veiculos.remove(veiculo);
+        veiculo.setCliente(null);
+    }
 
 
     @Override

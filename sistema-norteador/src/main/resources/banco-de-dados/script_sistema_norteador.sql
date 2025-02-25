@@ -52,26 +52,6 @@ CREATE TABLE IF NOT EXISTS motor(
         ON DELETE CASCADE
 ) engine=InnoDB;
 
-CREATE TABLE IF NOT EXISTS veiculo(
-    id int NOT NULL auto_increment,
-    placa varchar(10) NOT NULL,
-    observacoes varchar(350) NOT NULL DEFAULT 'Não informado',
-    id_cliente int NOT NULL,
-    id_modelo int NOT NULL,
-    id_cor int NOT NULL,
-    CONSTRAINT pk_veiculo
-      PRIMARY KEY(id),
-    CONSTRAINT fk_veiculo_cliente
-      FOREIGN KEY(id_cliente)
-      REFERENCES cliente(id),
-    CONSTRAINT fk_veiculo_modelo
-      FOREIGN KEY(id_modelo)
-      REFERENCES modelo(id),
-    CONSTRAINT fk_veiculo_cor
-      FOREIGN KEY(id_cor)
-      REFERENCES cor(id)
-) engine=InnoDB;
-
 CREATE TABLE IF NOT EXISTS cliente(
     id int NOT NULL auto_increment,
     nome varchar(150) NOT NULL,
@@ -106,6 +86,27 @@ CREATE TABLE IF NOT EXISTS pessoa_juridica(
         REFERENCES cliente(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS veiculo(
+    id int NOT NULL auto_increment,
+    placa varchar(10) NOT NULL,
+    observacoes varchar(350) NOT NULL DEFAULT 'Não informado',
+    id_cliente int NOT NULL,
+    id_modelo int NOT NULL,
+    id_cor int NOT NULL,
+    CONSTRAINT pk_veiculo
+      PRIMARY KEY(id),
+    CONSTRAINT fk_veiculo_cliente
+      FOREIGN KEY(id_cliente)
+      REFERENCES cliente(id)
+      ON DELETE CASCADE,
+    CONSTRAINT fk_veiculo_modelo
+      FOREIGN KEY(id_modelo)
+      REFERENCES modelo(id),
+    CONSTRAINT fk_veiculo_cor
+      FOREIGN KEY(id_cor)
+      REFERENCES cor(id)
 ) engine=InnoDB;
 
 CREATE TABLE ordem_de_servico(
@@ -162,10 +163,6 @@ UPDATE motor SET potencia=200, tipo_combustivel='GASOLINA' WHERE id_modelo = 1;
 UPDATE motor SET potencia=250, tipo_combustivel='DIESEL' WHERE id_modelo = 2;
 UPDATE motor SET potencia=300, tipo_combustivel='GASOLINA' WHERE id_modelo = 3;
 
-INSERT INTO veiculo(placa, observacoes, id_modelo, id_cor) VALUES('AAA-111','Não informado','1','1');
-INSERT INTO veiculo(placa, observacoes, id_modelo, id_cor) VALUES('BBB-222','Não informado','2','2');
-INSERT INTO veiculo(placa, observacoes, id_modelo, id_cor) VALUES('CCC-333','Não informado','3','3');
-
 INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Luiz', '(11) 91111-1111', 'luiz@gmail.com', '2024-11-01');
 INSERT INTO pessoa_fisica(id_cliente, cpf, data_nascimento) VALUES((SELECT max(id) FROM cliente), '111.111.111-11', '1970-01-10');
 INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Bruna', '(22) 92222-2222', 'bruna@gmail.com', '2024-11-02');
@@ -173,8 +170,12 @@ INSERT INTO pessoa_juridica(id_cliente, cnpj, inscricao_estadual) VALUES((SELECT
 INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Robson', '(33) 93333-3333', 'robson@gmail.com', '2024-11-03');
 INSERT INTO pessoa_fisica(id_cliente, cpf, data_nascimento) VALUES((SELECT max(id) FROM cliente), '333.333.333-33', '1980-03-20');
 
+INSERT INTO veiculo(placa, observacoes, id_cliente, id_modelo, id_cor) VALUES('AAA-111','Não informado','1','1','1');
+INSERT INTO veiculo(placa, observacoes, id_cliente, id_modelo, id_cor) VALUES('BBB-222','Não informado','2','2','2');
+INSERT INTO veiculo(placa, observacoes, id_cliente, id_modelo, id_cor) VALUES('CCC-333','Não informado','3','3','3');
+
 INSERT INTO ordem_de_servico(total, agenda, desconto, situacao, id_veiculo) VALUES('120', '2025-02-01', '0', 'ABERTA', '1');
-INSERT INTO item_da_ordem(valor_do_servico, observacao, id_servico, id_os) VALUES('50', 'Não informado', '1', '1');
-INSERT INTO item_da_ordem(valorServico, observacao, id_servico, id_os) VALUES('50', 'Não informado', '1', '1');
+INSERT INTO item_da_ordem(valor_do_servico, observacao, id_servico, id_os) VALUES('60', 'Não informado', '1', '1');
+INSERT INTO item_da_ordem(valor_do_servico, observacao, id_servico, id_os) VALUES('60', 'Não informado', '1', '1');
 
 

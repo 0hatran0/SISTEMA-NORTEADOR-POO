@@ -1,5 +1,6 @@
 package br.edu.ifsc.fln.model.dao;
 
+import br.edu.ifsc.fln.exception.DAOException;
 import br.edu.ifsc.fln.model.domain.*;
 
 import java.sql.Connection;
@@ -52,7 +53,6 @@ public class ClienteDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ClienteDAO.class.getName()).log(Level.SEVERE, null, ex);
-
             try {
                 connection.rollback();
                 System.out.println("rollback executado com sucesso!!!");
