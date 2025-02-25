@@ -81,9 +81,6 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
     @FXML
     private TableColumn<OrdemServico, String> tableColumnVeiculoDaOrdem;
 
-//    @FXML
-//    private TableColumn<Veiculo, String> tableColumnVeiculoDaOrdem;
-
     @FXML
     private TableView<OrdemServico> tableViewOrdemDeServico;
 
@@ -94,8 +91,6 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
     private final Database database = DatabaseFactory.getDatabase("mysql");
     private final Connection connection = database.conectar();
     private final OrdemServicoDAO ordemServicoDAO = new OrdemServicoDAO();
-    private final ItemOSDAO itemOSDAO = new ItemOSDAO();
-    private final ServicoDAO servicoDAO = new ServicoDAO();
 
     /**
      * Initializes the controller class.
@@ -142,36 +137,36 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
     }
 
     @FXML
-    private void handleButtonInserir(ActionEvent event) throws IOException, SQLException {
-//        OrdemServico ordemServico = new OrdemServico();
-//        List<ItemOS> itensOS = new ArrayList<>();
-//        ordemServico.setItemOS(itensOS);
-//        boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastroOrdemDeServicoDialog(ordemServico);
-//        if (buttonConfirmarClicked) {
-//            ordemServicoDAO.setConnection(connection);
-//            ordemServicoDAO.inserir(ordemServico);
-//            carregarTableView();
-//        }
+    private void handleBtInserir(ActionEvent event) throws IOException, SQLException {
+        OrdemServico ordemServico = new OrdemServico();
+        List<ItemOS> itensOS = new ArrayList<>();
+        ordemServico.setItemOS(itensOS);
+        boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastroOrdemDeServicoDialog(ordemServico);
+        if (buttonConfirmarClicked) {
+            ordemServicoDAO.setConnection(connection);
+            ordemServicoDAO.inserir(ordemServico);
+            carregarTableView();
+        }
     }
 
     @FXML
-    private void handleButtonAlterar(ActionEvent event) throws IOException {
-//        OrdemServico ordemServico = tableViewOrdemDeServico.getSelectionModel().getSelectedItem();
-//        if (ordemServico != null) {
-//            boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastroOrdemDeServicoDialog(ordemServico);
-//            if (buttonConfirmarClicked) {
-//                ordemServicoDAO.alterar(ordemServico);
-//                carregarTableView();
-//            }
-//        } else {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setContentText("Por favor, escolha um ordemServico na Tabela.");
-//            alert.show();
-//        }
+    private void handleBtAlterar(ActionEvent event) throws IOException {
+        OrdemServico ordemServico = tableViewOrdemDeServico.getSelectionModel().getSelectedItem();
+        if (ordemServico != null) {
+            boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastroOrdemDeServicoDialog(ordemServico);
+            if (buttonConfirmarClicked) {
+                ordemServicoDAO.alterar(ordemServico);
+                carregarTableView();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Por favor, escolha um ordemServico na Tabela.");
+            alert.show();
+        }
     }
 
     @FXML
-    private void handleButtonRemover(ActionEvent event) throws SQLException {
+    private void handleBtExcluir(ActionEvent event) throws SQLException {
         OrdemServico ordemServico = tableViewOrdemDeServico.getSelectionModel().getSelectedItem();
         if (ordemServico != null) {
             if (AlertDialog.confirmarExclusao("Tem certeza que deseja excluir a ordemServico " + ordemServico.getNumero())) {
@@ -186,28 +181,28 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoController implements Initializ
         }
     }
 
-//    public boolean showFXMLAnchorPaneCadastroOrdemDeServicoDialog(OrdemServico ordemServico) throws IOException {
-//        FXMLLoader loader = new FXMLLoader();
-//        loader.setLocation(FXMLAnchorPaneCadastroOrdemDeServicoController.class.getResource(
-//                "/view/FXMLAnchorPaneProcessoOrdemServicoDialog.fxml"));
-//        AnchorPane page = (AnchorPane) loader.load();
-//
-//        //criando um estágio de diálogo  (Stage Dialog)
-//        Stage dialogStage = new Stage();
-//        dialogStage.setTitle("Cadastro de ordemServicos");
-//        Scene scene = new Scene(page);
-//        dialogStage.setScene(scene);
-//
-//        //Setando o ordemServico ao controller
-//        FXMLAnchorPaneCadastroOrdemDeServicoDialogController controller = loader.getController();
-//        controller.setDialogStage(dialogStage);
-//        controller.setOrdemServico(ordemServico);
-//
-//        //Mostra o diálogo e espera até que o usuário o feche
-//        dialogStage.showAndWait();
-//
-//        return controller.isBtConfirmarClicked();
-//    }
+    public boolean showFXMLAnchorPaneCadastroOrdemDeServicoDialog(OrdemServico ordemServico) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(FXMLAnchorPaneCadastroOrdemDeServicoController.class.getResource(
+                "/view/FXMLAnchorPaneCadastroOrdemDeServicoDialog.fxml"));
+        AnchorPane page = (AnchorPane) loader.load();
+
+        //criando um estágio de diálogo  (Stage Dialog)
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("Cadastro de ordemServicos");
+        Scene scene = new Scene(page);
+        dialogStage.setScene(scene);
+
+        //Setando o ordemServico ao controller
+        FXMLAnchorPaneCadastroOrdemDeServicoDialogController controller = loader.getController();
+        controller.setDialogStage(dialogStage);
+        controller.setOrdemServico(ordemServico);
+
+        //Mostra o diálogo e espera até que o usuário o feche
+        dialogStage.showAndWait();
+
+        return controller.isBtConfirmarClicked();
+    }
 
 
 }

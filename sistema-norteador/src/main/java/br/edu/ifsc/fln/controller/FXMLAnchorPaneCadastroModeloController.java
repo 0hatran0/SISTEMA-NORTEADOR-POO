@@ -77,7 +77,6 @@ public class FXMLAnchorPaneCadastroModeloController implements Initializable {
     private final Database database = DatabaseFactory.getDatabase("mysql");
     private final Connection connection = database.conectar();
     private final ModeloDAO modeloDAO = new ModeloDAO();
-//    private final MotorDAO motorDAO = new MotorDAO();
     
     /**
      * Initializes the controller class.

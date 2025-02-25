@@ -22,11 +22,15 @@ public class ItemOS {
     }
 
     public double getValorServico() {
-        return valorServico;
+        if (this.valorServico == 0) {
+            return servico.getValor();
+        }else{
+            return valorServico;
+        }
     }
 
     public void setValorServico(double valorServico) {
-        this.valorServico = servico.getValor();
+        this.valorServico = valorServico;
     }
 
     public String getObservacoes() {

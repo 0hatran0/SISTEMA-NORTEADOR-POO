@@ -59,9 +59,6 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
     private ComboBox<Veiculo> cbVeiculo;
 
     @FXML
-    private MenuItem contextMenuItemAtualizarQtd;
-
-    @FXML
     private MenuItem contextMenuItemRemoverItem;
 
     @FXML
@@ -69,9 +66,6 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
 
     @FXML
     private DatePicker dpData;
-
-    @FXML
-    private TableColumn<ItemOS, String> tableColumnObservacao;
 
     @FXML
     private TableColumn<ItemOS, Servico> tableColumnServico;
@@ -89,7 +83,7 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
     private TextField tfTotal;
 
     @FXML
-    private TextField tfValor;
+    private TextField tfObservacao;
 
     private List<Veiculo> listaVeiculos;
     private List<Servico> listaServicos;
@@ -119,8 +113,7 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
         carregarChoiceBoxSituacao();
         setFocusLostHandle();
         tableColumnServico.setCellValueFactory(new PropertyValueFactory<>("servico"));
-        tableColumnObservacao.setCellValueFactory(new PropertyValueFactory<>("observacao"));
-        tableColumnValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+        tableColumnValor.setCellValueFactory(new PropertyValueFactory<>("valorServico"));
     }
     
     public void carregarComboBoxVeiculos() {
@@ -207,6 +200,7 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
             observableListItensOS = FXCollections.observableArrayList(
                     this.ordemServico.getItemOS());
             tableViewItensOS.setItems(observableListItensOS);
+            tfObservacao.setText("Não informado");
             tfDesconto.setText(String.format("%.2f", this.ordemServico.getDesconto()));
             tfTotal.setText(String.format("%.2f", this.ordemServico.getTotal()));
             cbStatus.getSelectionModel().select(this.ordemServico.getStatus());
@@ -218,17 +212,16 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
         Servico servico;
         ItemOS itemOS = new ItemOS();
         if (cbServico.getSelectionModel().getSelectedItem() != null) {
-            //o comboBox possui dados sintetizados de Produto para evitar carga desnecessária de informação
             servico = cbServico.getSelectionModel().getSelectedItem();
-            //a instrução a seguir busca detalhes do produto selecionado
             servico  = servicoDAO.buscar(servico);
             itemOS.setServico(servico);
             itemOS.setValorServico(servico.getValor());
-            itemOS.setObservacoes(itemOS.getObservacoes());
+            itemOS.setObservacoes(tfObservacao.getText());
             itemOS.setOrdemServico(ordemServico);
-            ordemServico.getItemOS().add(itemOS);
+            ordemServico.add(itemOS);
             observableListItensOS = FXCollections.observableArrayList(ordemServico.getItemOS());
             tableViewItensOS.setItems(observableListItensOS);
+            ordemServico.calcularServico();
             tfTotal.setText(String.format("%.2f", ordemServico.getTotal()));
         }
     }
@@ -255,25 +248,11 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
         ItemOS itemOS
                 = tableViewItensOS.getSelectionModel().getSelectedItem();
         if (itemOS == null) {
-            contextMenuItemAtualizarQtd.setDisable(true);
             contextMenuItemRemoverItem.setDisable(true);
         } else {
-            contextMenuItemAtualizarQtd.setDisable(false);
             contextMenuItemRemoverItem.setDisable(false);
         }
 
-    }
-
-    @FXML
-    private void handleContextMenuItemAtualizarQtd() {
-        ItemOS itemOS
-                = tableViewItensOS.getSelectionModel().getSelectedItem();
-        int index = tableViewItensOS.getSelectionModel().getSelectedIndex();
-        ordemServico.getItemOS().set(index, itemOS);
-        itemOS.setValorServico(itemOS.getServico().getValor());
-        itemOS.setObservacoes(itemOS.getObservacoes());
-        tableViewItensOS.refresh();
-        tfTotal.setText(String.format("%.2f", ordemServico.getTotal()));
     }
 
 //    private String inputDialog(int value) {
@@ -293,9 +272,10 @@ public class FXMLAnchorPaneCadastroOrdemDeServicoDialogController implements Ini
                 = tableViewItensOS.getSelectionModel().getSelectedItem();
         int index = tableViewItensOS.getSelectionModel().getSelectedIndex();
         ordemServico.getItemOS().remove(index);
+        ordemServico.remove(itemOS);
         observableListItensOS = FXCollections.observableArrayList(ordemServico.getItemOS());
         tableViewItensOS.setItems(observableListItensOS);
-
+        ordemServico.calcularServico();
         tfTotal.setText(String.format("%.2f", ordemServico.getTotal()));
     }
 

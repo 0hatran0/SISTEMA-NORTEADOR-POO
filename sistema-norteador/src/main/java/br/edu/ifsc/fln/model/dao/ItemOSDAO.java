@@ -95,7 +95,7 @@ public class ItemOSDAO {
     }
 
     public List<ItemOS> listarPorOrdem(OrdemServico ordemServico) {
-        String sql = "SELECT * FROM item_de_venda WHERE id_os=?";
+        String sql = "SELECT * FROM item_da_ordem WHERE id_os=?";
         List<ItemOS> retorno = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -108,7 +108,7 @@ public class ItemOSDAO {
                 OrdemServico os = new OrdemServico();
                 //
                 itemOS.setId(resultado.getInt("id"));
-                itemOS.setValorServico(resultado.getDouble("valor_do_servico"));
+                itemOS.setValorServico(resultado.getDouble("valorServico"));
                 itemOS.setObservacoes(resultado.getString("observacao"));
 
                 servico.setId(resultado.getInt("id_servico"));
@@ -130,7 +130,7 @@ public class ItemOSDAO {
     }
 
     public ItemOS buscar(ItemOS itemOS) {
-        String sql = "SELECT * FROM item_de_venda WHERE id=?";
+        String sql = "SELECT * FROM item_da_ordem WHERE id=?";
         ItemOS retorno = new ItemOS();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);

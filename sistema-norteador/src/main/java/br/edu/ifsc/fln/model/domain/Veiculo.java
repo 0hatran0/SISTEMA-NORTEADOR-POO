@@ -84,7 +84,12 @@ public class Veiculo {
         this.cor = cor;
     }
 
-//    @Override
+    @Override
+    public String toString() {
+        return placa;
+    }
+
+    //    @Override
 //    public String toString() {
 //        return "Veiculo{" + "id=" + id + ", placa=" 
 //                + placa + ", observacoes=" + observacoes

@@ -34,8 +34,9 @@ public class OrdemServico {
     }
 
     public double getTotal() {
-        calcularServico();
         return total; }
+
+    public void setTotal(double total) { this.total = total; }
 
     public LocalDate getAgenda() {
         return agenda;
@@ -79,12 +80,12 @@ public class OrdemServico {
 
     // Metodos
     public double calcularServico(){
+        this.total = 0;
         for(int i=0;i<(this.itemOS.size());i++ ){
             this.total+= this.itemOS.get(i).getValorServico();
         }
         this.total-= (this.total*(this.desconto/100));
         return total;
-
     }
 
     public void add(ItemOS itemOS){

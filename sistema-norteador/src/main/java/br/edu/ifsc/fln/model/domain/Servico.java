@@ -64,9 +64,10 @@ public class Servico {
         this.categoria = categoria;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Servico{" + "id=" + id + ", descricao=" + descricao + ", valor=" + valor + ", categoria=" + categoria + '}';
-//    }
+
+    @Override
+    public String toString() {
+        return descricao;
+    }
     
 }

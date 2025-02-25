@@ -73,7 +73,7 @@ public class VeiculoDAO {
     }
 
     public List<Veiculo> listar() {
-        String sql = "SELECT * FROM veiculo;";
+        String sql = "SELECT * FROM veiculo";
         List<Veiculo> retorno = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -89,7 +89,7 @@ public class VeiculoDAO {
     }
 
     public Veiculo buscar(Veiculo veiculo) {
-        String sql = "SELECT * FROM veiculo WHERE md.id = ?;";
+        String sql = "SELECT * FROM veiculo WHERE id = ?";
         Veiculo retorno = new Veiculo();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);

@@ -124,7 +124,7 @@ CREATE TABLE ordem_de_servico(
 
 CREATE TABLE item_da_ordem(
     id int NOT NULL auto_increment,
-    valorServico decimal(10,2) NOT NULL,
+    valor_do_servico decimal(10,2) NOT NULL,
     observacao VARCHAR(300) NOT NULL DEFAULT 'Não informado',
     id_servico int NOT NULL,
     id_os int NOT NULL,
@@ -173,8 +173,8 @@ INSERT INTO pessoa_juridica(id_cliente, cnpj, inscricao_estadual) VALUES((SELECT
 INSERT INTO cliente(nome, celular,  email, data_cadastro) VALUES('Robson', '(33) 93333-3333', 'robson@gmail.com', '2024-11-03');
 INSERT INTO pessoa_fisica(id_cliente, cpf, data_nascimento) VALUES((SELECT max(id) FROM cliente), '333.333.333-33', '1980-03-20');
 
-INSERT INTO ordem_de_servico(numero, total, agenda, desconto, situacao, id_veiculo) VALUES('1', '120', '2025-02-01', '0', 'ABERTA', '1');
-INSERT INTO item_da_ordem(valorServico, observacao, id_servico, id_os) VALUES('50', 'Não informado', '1', '1');
+INSERT INTO ordem_de_servico(total, agenda, desconto, situacao, id_veiculo) VALUES('120', '2025-02-01', '0', 'ABERTA', '1');
+INSERT INTO item_da_ordem(valor_do_servico, observacao, id_servico, id_os) VALUES('50', 'Não informado', '1', '1');
 INSERT INTO item_da_ordem(valorServico, observacao, id_servico, id_os) VALUES('50', 'Não informado', '1', '1');
 
 

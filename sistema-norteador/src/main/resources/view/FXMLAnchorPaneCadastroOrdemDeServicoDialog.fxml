@@ -77,20 +77,18 @@
             <HBox prefHeight="21.0" prefWidth="302.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
                   <ComboBox fx:id="cbServico" prefHeight="25.0" prefWidth="196.0" promptText="Selecione" />
-                  <TextField fx:id="tfValor" />
+                  <TextField fx:id="tfObservacao" text="Não informado" />
                   <Button fx:id="btAdicionar" mnemonicParsing="false" onAction="#handleBtAdicionar" prefHeight="25.0" prefWidth="62.0" text="+" />
                </children>
             </HBox>
             <TableView fx:id="tableViewItensOS" onMouseClicked="#handleTableViewMouseClicked" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
               <columns>
-                <TableColumn fx:id="tableColumnServico" prefWidth="175.0" text="Serviço" />
-                <TableColumn fx:id="tableColumnValor" prefWidth="74.0" text="Valor" />
-                  <TableColumn fx:id="tableColumnObservacao" prefWidth="91.0" text="Obs" />
+                <TableColumn fx:id="tableColumnServico" prefWidth="232.0" text="Serviço" />
+                <TableColumn fx:id="tableColumnValor" prefWidth="108.0" text="Valor" />
               </columns>
                <contextMenu>
                   <ContextMenu>
                     <items>
-                        <MenuItem fx:id="contextMenuItemAtualizarQtd2111" mnemonicParsing="false" onAction="#handleContextMenuItemAtualizarQtd" text="AtualizarQuantidade" />
                         <MenuItem fx:id="contextMenuItemAtualizarQtd21111" mnemonicParsing="false" onAction="#handleContextMenuItemRemoverItem" text="Remover Item" />
                     </items>
                   </ContextMenu>

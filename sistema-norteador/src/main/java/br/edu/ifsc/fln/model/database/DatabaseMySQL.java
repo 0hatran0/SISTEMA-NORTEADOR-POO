@@ -16,7 +16,7 @@ public class DatabaseMySQL implements Database {
             final String DRIVER = "com.mysql.cj.jdbc.Driver";//MySQL 8
             final String URL = "jdbc:mysql://localhost:3306/db_lavacao?useTimezone=true&serverTimezone=UTC";//MySQL 8
             final String USER = "root";
-            final String PASS = "";
+            final String PASS = "senha";
             Class.forName(DRIVER);
             this.connection = DriverManager.getConnection(URL, USER, PASS);
             System.out.println("Conexão realizada com sucesso!");

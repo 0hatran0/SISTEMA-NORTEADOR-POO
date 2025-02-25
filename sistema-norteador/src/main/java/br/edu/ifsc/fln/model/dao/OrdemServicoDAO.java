@@ -21,20 +21,19 @@ public class OrdemServicoDAO {
     }
 
     public boolean inserir(OrdemServico ordemServico) {
-        String sql = "INSERT INTO ordem_de_servico(numero, total, agenda, desconto, situacao, id_veiculo) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO ordem_de_servico(total, agenda, desconto, situacao, id_veiculo) VALUES(?,?,?,?,?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             connection.setAutoCommit(false);
-            stmt.setLong(1, ordemServico.getNumero());
-            stmt.setDouble(2, ordemServico.calcularServico());
-            stmt.setDate(3, Date.valueOf(ordemServico.getAgenda()));
-            stmt.setDouble(4, ordemServico.getDesconto());
+            stmt.setDouble(1, ordemServico.calcularServico());
+            stmt.setDate(2, Date.valueOf(ordemServico.getAgenda()));
+            stmt.setDouble(3, ordemServico.getDesconto());
             if  (ordemServico.getStatus().name() != null) {
-                stmt.setString(5, ordemServico.getStatus().name());
+                stmt.setString(4, ordemServico.getStatus().name());
             } else {
-                stmt.setString(5, EStatus.ABERTA.name());
+                stmt.setString(4, EStatus.ABERTA.name());
             }
-            stmt.setInt(6, ordemServico.getVeiculo().getId());
+            stmt.setInt(5, ordemServico.getVeiculo().getId());
             // execute ou executeQuery
             stmt.execute();
             ItemOSDAO itemOSDAO = new ItemOSDAO();
@@ -150,7 +149,7 @@ public class OrdemServicoDAO {
                 List<ItemOS> itensOS;
 
                 ordemServico.setNumero(resultado.getInt("numero"));
-                ordemServico.calcularServico();
+                ordemServico.setTotal(resultado.getDouble("total"));
                 ordemServico.setAgenda(resultado.getDate("agenda").toLocalDate());
                 ordemServico.setDesconto(resultado.getDouble("desconto"));
                 ordemServico.setStatus(Enum.valueOf(EStatus.class, resultado.getString("situacao")));
@@ -175,17 +174,15 @@ public class OrdemServicoDAO {
     }
 
     public OrdemServico buscar(OrdemServico ordemServico) {
-        String sql = "SELECT * FROM ordem_de_servico WHERE id=?";
+        String sql = "SELECT * FROM ordem_de_servico WHERE numero=?";
         OrdemServico retorno = new OrdemServico();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setLong(1, ordemServico.getNumero());
-            // Como que é armazenado os dados nessa variavel? è tipo um DTO?
             ResultSet resultado = stmt.executeQuery();
             if (resultado.next()) {
                 Veiculo veiculo = new Veiculo();
                 retorno.setNumero(resultado.getLong("numero"));
-                retorno.calcularServico();
                 retorno.setAgenda(resultado.getDate("agenda").toLocalDate());
                 retorno.setDesconto(resultado.getDouble("desconto"));
                 retorno.setStatus(Enum.valueOf(EStatus.class, resultado.getString("situacao")));
@@ -199,7 +196,7 @@ public class OrdemServicoDAO {
     }
 
     public OrdemServico buscar(int id) {
-        String sql = "SELECT * FROM ordemServico WHERE id=?";
+        String sql = "SELECT * FROM ordem_de_servico WHERE numero=?";
         OrdemServico retorno = new OrdemServico();
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -208,7 +205,6 @@ public class OrdemServicoDAO {
             if (resultado.next()) {
                 Veiculo veiculo = new Veiculo();
                 retorno.setNumero(resultado.getLong("numero"));
-                retorno.calcularServico();
                 retorno.setAgenda(resultado.getDate("agenda").toLocalDate());
                 retorno.setDesconto(resultado.getDouble("desconto"));
                 retorno.setStatus(Enum.valueOf(EStatus.class, resultado.getString("status")));
@@ -222,7 +218,7 @@ public class OrdemServicoDAO {
     }
 
     public OrdemServico buscarUltimaOrdemServico() {
-        String sql = "SELECT max(id) as max FROM ordemServico";
+        String sql = "SELECT max(numero) as max FROM ordem_de_servico";
         // Alterar o nome da databela "max"
         OrdemServico retorno = new OrdemServico();
         try {
