@@ -52,7 +52,7 @@ public class FXMLAnchorPaneCadastroClienteDialogController implements Initializa
     private TextField tfCelular;
 
     @FXML
-    private TextField tfDataCadastro;
+    private DatePicker dpCadastro;
 
     @FXML
     private TextField tfEmail;
@@ -95,15 +95,20 @@ public class FXMLAnchorPaneCadastroClienteDialogController implements Initializa
         return cliente;
     }
 
+//    public void trocarInputs(){
+//
+//    }
+
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
         if (cliente.getId() != 0) {
             this.tfNome.setText(this.cliente.getNome());
             this.tfCelular.setText(this.cliente.getCelular());
             this.tfEmail.setText(this.cliente.getEmail());
-            this.tfDataCadastro.setText(this.cliente.getDataCadastro());
+            this.dpCadastro.setValue(this.cliente.getDataCadastro());
             this.gbTipo.setDisable(true);
             if (cliente instanceof PessoaFisica) {
+                tfIEouDataNasc.setDisable(false);
                 rbPessoaFisica.setSelected(true);
                 tfCPFouCNPJ.setText(((PessoaFisica) this.cliente).getCpf());
                 tfIEouDataNasc.setText(((PessoaFisica) this.cliente).getDataNascimento());
@@ -122,7 +127,7 @@ public class FXMLAnchorPaneCadastroClienteDialogController implements Initializa
             cliente.setNome(tfNome.getText());
             cliente.setCelular(tfCelular.getText());
             cliente.setEmail(tfEmail.getText());
-            cliente.setDataCadastro(tfDataCadastro.getText());
+            cliente.setDataCadastro(dpCadastro.getValue());
             if (rbPessoaFisica.isSelected()) {
                 ((PessoaFisica) cliente).setCpf(tfCPFouCNPJ.getText());
                 ((PessoaFisica) cliente).setDataNascimento(tfIEouDataNasc.getText());
@@ -167,7 +172,7 @@ public class FXMLAnchorPaneCadastroClienteDialogController implements Initializa
             errorMessage += "Email inválido.\n";
         }
 
-        if (this.tfDataCadastro.getText() == null || this.tfDataCadastro.getText().length() == 0) {
+        if (this.dpCadastro.getValue() == null) {
             errorMessage += "Data de cadastro inválido.\n";
         }
 

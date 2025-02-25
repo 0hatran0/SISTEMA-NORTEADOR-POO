@@ -26,7 +26,7 @@ public class ModeloDAO {
     public boolean inserir(Modelo modelo) {
         final String sql = "INSERT INTO modelo(descricao, id_marca, categoria) VALUES(?,?,?);";
         final String sqlMotor = "INSERT INTO motor(id_modelo, potencia, tipo_combustivel) "
-                + "VALUES(SELECT max(id) FROM modelo, ?, ?);";
+                + "VALUES((SELECT max(id) FROM modelo), ?, ?);";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             //registra o modelo

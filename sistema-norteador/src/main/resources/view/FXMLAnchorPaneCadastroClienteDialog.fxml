@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
@@ -12,7 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="AnchorPane" prefHeight="276.0" prefWidth="442.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifsc.fln.controller.FXMLAnchorPaneCadastroClienteDialogController">
+<AnchorPane id="AnchorPane" prefHeight="276.0" prefWidth="442.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifsc.fln.controller.FXMLAnchorPaneCadastroClienteDialogController">
    <children>
       <GridPane layoutX="23.0" layoutY="21.0" prefHeight="208.0" prefWidth="394.0">
         <columnConstraints>
@@ -62,7 +63,6 @@
                </opaqueInsets>
             </Label>
             <TextField fx:id="tfEmail" prefHeight="25.0" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField fx:id="tfDataCadastro" prefHeight="25.0" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="tfCPFouCNPJ" prefHeight="25.0" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <TextField fx:id="tfIEouDataNasc" prefHeight="25.0" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="113.0" text="Tipo:" GridPane.rowIndex="4">
@@ -77,6 +77,7 @@
                   <RadioButton fx:id="rbPessoaJuridica" layoutX="146.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleRbPessoaJuridica" text="Pessoa Juridica" />
                </children>
             </Pane>
+            <DatePicker fx:id="dpCadastro" prefHeight="25.0" prefWidth="284.0" promptText="Data" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>
       </GridPane>
       <Group layoutX="276.0" layoutY="236.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0">

@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -113,7 +114,7 @@ public class FXMLAnchorPaneCadastroClienteController implements Initializable {
             lbClienteNome.setText(cliente.getNome());
             lbClienteCelular.setText(cliente.getCelular());
             lbClienteEmail.setText(cliente.getEmail());
-            lbClienteDataCadastro.setText(cliente.getDataCadastro());
+            lbClienteDataCadastro.setText(String.valueOf(cliente.getDataCadastro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
             if (cliente instanceof PessoaFisica) {
                 lbClienteTipo.setText("PessoaFisica");
                 lbClienteCPFouCNPJ.setText(((PessoaFisica)cliente).getCpf());

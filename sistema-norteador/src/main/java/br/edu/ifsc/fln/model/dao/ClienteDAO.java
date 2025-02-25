@@ -3,10 +3,7 @@ package br.edu.ifsc.fln.model.dao;
 import br.edu.ifsc.fln.exception.DAOException;
 import br.edu.ifsc.fln.model.domain.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,7 +32,7 @@ public class ClienteDAO {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCelular());
             stmt.setString(3, cliente.getEmail());
-            stmt.setString(4, cliente.getDataCadastro());
+            stmt.setDate(4, Date.valueOf(cliente.getDataCadastro()));
             stmt.execute();
             //armazena os dados da subclasse
             if (cliente instanceof PessoaFisica) {
@@ -79,7 +76,7 @@ public class ClienteDAO {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getCelular());
             stmt.setString(3, cliente.getEmail());
-            stmt.setString(4, cliente.getDataCadastro());
+            stmt.setDate(4, Date.valueOf(cliente.getDataCadastro()));
             stmt.setInt(5, cliente.getId());
             stmt.execute();
             if (cliente instanceof PessoaFisica) {
@@ -186,7 +183,7 @@ public class ClienteDAO {
         cliente.setNome(rs.getString("nome"));
         cliente.setCelular(rs.getString("celular"));
         cliente.setEmail(rs.getString("email"));
-        cliente.setDataCadastro(rs.getString("data_cadastro"));
+        cliente.setDataCadastro(rs.getDate("data_cadastro").toLocalDate());
         return cliente;
     }
 

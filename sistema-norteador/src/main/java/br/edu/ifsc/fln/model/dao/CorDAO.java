@@ -23,7 +23,7 @@ public class CorDAO {
         this.connection = connection;
     }
 
-    public boolean inserir(Cor cor) throws DAOException {
+    public boolean inserir(Cor cor) {
         String sql = "INSERT INTO cor(nome) VALUES(?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -32,11 +32,11 @@ public class CorDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(CorDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível inserir o registro no banco de dados!", ex);
+            return false;
         }
     }
 
-    public boolean alterar(Cor cor) throws DAOException {
+    public boolean alterar(Cor cor) {
         String sql = "UPDATE cor SET nome=? WHERE id=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -46,11 +46,11 @@ public class CorDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(CorDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível atualizar o registro no banco de dados.", ex);
+            return false;
         }
     }
 
-    public boolean remover(Cor cor) throws DAOException {
+    public boolean remover(Cor cor) {
         String sql = "DELETE FROM cor WHERE id=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -59,11 +59,11 @@ public class CorDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(CorDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível excluir  o registro do banco de dados.", ex);
+            return false;
         }
     }
 
-    public List<Cor> listar() throws DAOException {
+    public List<Cor> listar() {
         String sql = "SELECT * FROM cor";
         List<Cor> retorno = new ArrayList<>();
         try {
@@ -77,17 +77,16 @@ public class CorDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(CorDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public Cor buscar(Cor cor) throws DAOException {
+    public Cor buscar(Cor cor){
         Cor retorno = buscar(cor.getId());
         return retorno;
     }
     
-    public Cor buscar(int id) throws DAOException {
+    public Cor buscar(int id){
         String sql = "SELECT * FROM cor WHERE id=?";
         Cor retorno = new Cor();
         try {
@@ -100,7 +99,6 @@ public class CorDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(CorDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;        
     }

@@ -1,5 +1,7 @@
 package br.edu.ifsc.fln.model.domain;
 
+import java.time.LocalDate;
+
 public class PessoaFisica extends Cliente{
     private String cpf;
     private String dataNascimento;
@@ -12,7 +14,7 @@ public class PessoaFisica extends Cliente{
         this.dataNascimento = dataNascimento;
     }
 
-    public PessoaFisica(String cpf, String dataNascimento, int id, String nome, String celular, String emial, String dataCadastro) {
+    public PessoaFisica(String cpf, String dataNascimento, int id, String nome, String celular, String emial, LocalDate dataCadastro) {
         super(id, nome, celular, emial, dataCadastro);
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;

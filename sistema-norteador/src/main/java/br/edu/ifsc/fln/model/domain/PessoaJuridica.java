@@ -1,16 +1,18 @@
 package br.edu.ifsc.fln.model.domain;
 
+import java.time.LocalDate;
+
 public class PessoaJuridica extends Cliente {
     private String cnpj;
     private String inscricaoEstadual;
 
     public PessoaJuridica() {}
 
-    public PessoaJuridica(int id, String nome, String celular, String emial, String dataCadastro) {
+    public PessoaJuridica(int id, String nome, String celular, String emial, LocalDate dataCadastro) {
         super(id, nome, celular, emial, dataCadastro);
     }
 
-    public PessoaJuridica(String cnpj, String inscricaoEstadual, int id, String nome, String celular, String emial, String dataCadastro) {
+    public PessoaJuridica(String cnpj, String inscricaoEstadual, int id, String nome, String celular, String emial, LocalDate dataCadastro) {
         super(id, nome, celular, emial, dataCadastro);
         this.cnpj = cnpj;
         this.inscricaoEstadual = inscricaoEstadual;

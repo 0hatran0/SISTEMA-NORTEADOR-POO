@@ -24,7 +24,7 @@ public class ItemOSDAO {
         this.connection = connection;
     }
 
-    public boolean inserir(ItemOS itemOS) throws DAOException {
+    public boolean inserir(ItemOS itemOS) {
         String sql = "INSERT INTO item_da_ordem(valor_do_servico, observacao, id_servico, id_os) VALUES(?,?,?,?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -36,7 +36,7 @@ public class ItemOSDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível inserir o registro no banco de dados!", ex);
+            return false;
         }
     }
 
@@ -45,7 +45,7 @@ public class ItemOSDAO {
     }
 
     //Precisa desse remove? Ja possui o delete on cascade
-    public boolean remover(ItemOS itemOS) throws DAOException {
+    public boolean remover(ItemOS itemOS) {
         String sql = "DELETE FROM item_da_ordem WHERE id=?";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -54,11 +54,11 @@ public class ItemOSDAO {
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível excluir  o registro do banco de dados.", ex);
+            return false;
         }
     }
 
-    public List<ItemOS> listar() throws DAOException {
+    public List<ItemOS> listar() {
         String sql = "SELECT * FROM item_da_ordem";
         List<ItemOS> retorno = new ArrayList<>();
         try {
@@ -91,12 +91,11 @@ public class ItemOSDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public List<ItemOS> listarPorOrdem(OrdemServico ordemServico) throws DAOException {
+    public List<ItemOS> listarPorOrdem(OrdemServico ordemServico) {
         String sql = "SELECT * FROM item_da_ordem WHERE id_os=?";
         List<ItemOS> retorno = new ArrayList<>();
         try {
@@ -127,12 +126,11 @@ public class ItemOSDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ItemOSDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }
 
-    public ItemOS buscar(ItemOS itemOS) throws DAOException {
+    public ItemOS buscar(ItemOS itemOS) {
         String sql = "SELECT * FROM item_da_ordem WHERE id=?";
         ItemOS retorno = new ItemOS();
         try {
@@ -165,7 +163,6 @@ public class ItemOSDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrdemServicoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            throw new DAOException("Não foi possível realizar a pesquisa no banco de dados", ex);
         }
         return retorno;
     }

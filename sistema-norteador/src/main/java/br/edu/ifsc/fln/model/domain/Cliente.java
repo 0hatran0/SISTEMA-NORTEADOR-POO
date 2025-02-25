@@ -2,6 +2,7 @@ package br.edu.ifsc.fln.model.domain;
 
 //import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public abstract class Cliente {
     protected String nome;
     protected String celular;
     protected String email;
-    protected String dataCadastro;
+    protected LocalDate dataCadastro;
 
 //    protected Pontuacao pontuacao = new Pontuacao();
     private List<Veiculo> veiculos = new ArrayList<>();
@@ -18,7 +19,7 @@ public abstract class Cliente {
     public Cliente() {
     }
 
-    public Cliente(int id, String nome, String celular, String email, String dataCadastro) {
+    public Cliente(int id, String nome, String celular, String email, LocalDate dataCadastro) {
         this();
         this.id = id;
         this.nome = nome;
@@ -51,7 +52,7 @@ public abstract class Cliente {
         return email;
     }
 
-    public String getDataCadastro() {
+    public LocalDate getDataCadastro() {
         return dataCadastro;
     }
 
@@ -71,7 +72,7 @@ public abstract class Cliente {
         this.email = email;
     }
 
-    public void setDataCadastro(String dataCadastro) {
+    public void setDataCadastro(LocalDate dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
 
@@ -88,7 +89,6 @@ public abstract class Cliente {
         this.veiculos.remove(veiculo);
         veiculo.setCliente(null);
     }
-
 
     @Override
     public String toString() {
